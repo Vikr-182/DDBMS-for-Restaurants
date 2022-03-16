@@ -9,20 +9,9 @@ from re import L
 from select import select
 from mysql.connector.constants import ServerFlag
 
-parsed_query = sqlparse.parse(sqlparse.format(query, keyword_case='upper'))[0].tokens
-
-token_list = []
-print(sqlparse.parse(sqlparse.format(query, keyword_case='upper'))[0])
-
-print(token_list)
-
-# IDENTIFY TABLES
-
-
-# IDENTIFY CONDITIONS
-
-
 # INITIAL QUERY TREE
-
+class Node:
+    def __init__(self, type="") -> None:
+        
 
 # DATA LOCALIZATION
