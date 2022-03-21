@@ -13,6 +13,9 @@ from mysql.connector.constants import ServerFlag
 
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['figure.figsize'] = 15, 15
+
 
 from utils import *
 from networkx.drawing.nx_pydot import graphviz_layout
@@ -58,7 +61,9 @@ class Tree:
         print(list(self.G.nodes))
         print(list(self.G.edges))
         pos = graphviz_layout(self.G, prog="dot")
-        nx.draw(self.G, labels=self.labeldict, with_labels = True, pos=pos)
+        nx.draw(self.G,  labels=self.labeldict, pos=pos, with_labels=True,  node_shape="s",  node_color="none", bbox=dict(facecolor="skyblue", edgecolor='black', boxstyle='round,pad=0.2'))
+        # nx.draw(self.G, labels=self.labeldict, with_labels = True, pos=pos)
+        plt.tight_layout()
         plt.savefig("filename.png")
 
     def add_edge(self, u, v):
