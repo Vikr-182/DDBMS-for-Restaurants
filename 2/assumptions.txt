@@ -21,6 +21,9 @@ ORDER BY
 LIMIT
     10
 
-1. Every column will be type-def.ed only once in the entire statement, and the subsequent statements refer it by the type-def.ed name.
+0. No nested queries
+1. Every column will be type-def.ed only once in the entire statement, and all statements refer it by the type-def.ed name.
 2. JOIN always before WHERE, no redundant conditions. All JOIN queries have atleast 1 term in predicate of the join relation.
-3. Groupby only on 1 column
+3. Non-comp Conditions only have integers or literals on RHS, no OR in INNER JOIN
+4. SELECT AGG(C), * is possible
+5. All column names unique across tables (property of schema)

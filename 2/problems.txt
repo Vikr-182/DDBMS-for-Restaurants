@@ -1,0 +1,6 @@
+1. multiple JOIN conditions
+2. handling * in SELECT, extracting column names -> done
+3. JOIN condition inside OR (assuming no such condition)
+4. nested aggregation
+5. error handling for wrong cols
+6. AND inside OR - how to handle?
