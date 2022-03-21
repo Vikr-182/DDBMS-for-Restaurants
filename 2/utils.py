@@ -19,8 +19,6 @@ def get_table(parser, col):
     if len(col.split(".")) > 1:
         # contains table
         return col.split(".")[0]
-    print(findTable(parser.schema, col), "PPP")
-    print(parser.alias_of_relation, "AAAA")
     return parser.alias_of_relation[findTable(parser.schema, col)]
 
 def check_if_a_col(parser, col):

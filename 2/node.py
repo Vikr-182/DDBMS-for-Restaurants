@@ -48,8 +48,11 @@ class Tree:
             "le":"<=",
             "gt":">",
             "ge":">=",
-            "neq":"!="
+            "neq":"!=",
+            "cross": "X"
         }
+        self.select_conditions = {}
+        self.select_endpoints = {}
         self.nodenum = 0
         self.labeldict = {}
         self.join_mapping = {}
@@ -75,14 +78,7 @@ class Tree:
             cond = self.operator_to_sign[list(condition.items())[0][0]]
             colname = list(condition.items())[0][1][0]
             literal = list(condition.items())[0][1][1]
-            if parser.column_names.get(colname) != None: 
-                relation_name = parser.column_names[colname].split(".")[0]
-            else:
-                if len(colname.split(".")) > 1:
-                    table_name = colname.split(".")[0]
-                    relation_name = findTable(schema=parser.schema, col=colname.split(".")[1], tablename=table_name)
-                else:
-                    relation_name = findTable(schema=parser.schema, col=colname)
+            relation_name = get_table(parser, colname)
             if self.select_conditions.get(relation_name) == None:
                 self.select_conditions[relation_name] = []
             self.select_conditions[relation_name].append((condition, self.nodenum))
@@ -94,18 +90,36 @@ class Tree:
             # put as 1 node
             self.or_conditions.append((condition, self.nodenum))
 
+    def add_node(self, parser, k, cond, nodetype):
+        node = Node(self.condnum, content=k, nodetype=nodetype)
+        cond1 = k[cond][0]
+        cond2 = k[cond][1]
+        rel1 = get_table(parser, cond1)
+        rel2 = get_table(parser, cond2)
+        end1 = self.select_endpoints[rel1]
+        end2 = self.select_endpoints[rel2]
+        self.G.add_node(self.nodenum, data=node)
+        if type(cond2) == dict:
+            cond2 = cond2["literal"]
+        self.labeldict[self.nodenum] = nodetype.upper() + " " + cond1 + " " + self.operator_to_sign[cond] + " " + str(cond2)
+        self.add_edge(end1, self.nodenum)
+        self.add_edge(end2, self.nodenum)
+        self.select_endpoints[rel1] = self.nodenum
+        self.select_endpoints[rel2] = self.nodenum
+        self.nodenum = self.nodenum + 1
+        self.condnum = self.condnum + 1
+
     def build(self, parser):
         # build itself using the parser
         self.nodenum = 0
         table_to_num = {}
-        select_endpoints = {}
         # build nodes of tables
         for table in list(parser.relation_names.keys()):
             node = Node(nodenum=self.nodenum, content=table, nodetype="RELATION")
             self.G.add_node(self.nodenum, data=node)
             self.labeldict[self.nodenum] = table
             table_to_num[table] = self.nodenum
-            select_endpoints[table] = self.nodenum
+            self.select_endpoints[table] = self.nodenum
             self.nodenum = self.nodenum + 1
         self.table_to_num = table_to_num
 
@@ -150,74 +164,31 @@ class Tree:
                 literal = list(condition.items())[0][1][1]
                 nodenum = condnum
                 self.add_edge(prevnode, nodenum)
+                if type(literal) == dict:
+                    literal = literal["literal"]
                 self.labeldict[nodenum] = "SELECT " + colname + cond + str(literal)
                 prevnode = condnum
-            select_endpoints[k] = prevnode
+            self.select_endpoints[k] = prevnode
 
         # join conditions
         for k,v in self.join_conditions:
             cond = next(iter(k))
             if cond == "eq":
-                node = Node(self.condnum, content=k, nodetype="join")
-                cond1 = k[cond][0]
-                cond2 = k[cond][1]
-                rel1 = get_table(parser, cond1)
-                rel2 = get_table(parser, cond2)
-                end1 = select_endpoints[rel1] 
-                end2 = select_endpoints[rel2]
-                self.G.add_node(self.nodenum, data=node)
-                self.labeldict[self.nodenum] = "JOIN " + cond1 + self.operator_to_sign[cond] + cond2
-                self.add_edge(end1, self.nodenum)
-                self.add_edge(end2, self.nodenum)
-                select_endpoints[rel1] = self.nodenum
-                select_endpoints[rel2] = self.nodenum
-                self.nodenum = self.nodenum + 1
-                self.condnum = self.condnum + 1
+                self.add_node(parser,k,cond,nodetype="join")
+
         for k,v in self.join_conditions:
             cond = next(iter(k))
             if cond != "eq":
                 # break into 2
-                node = Node(self.nodenum, content=k, nodetype="cross")
-                self.cond_to_num[self.condnum] = self.nodenum
-                cond1 = k[cond][0]
-                cond2 = k[cond][1]
-                rel1 = get_table(parser, cond1)
-                rel2 = get_table(parser, cond2)
-                end1 = select_endpoints[rel1]
-                end2 = select_endpoints[rel2]
-                self.G.add_node(self.nodenum, data=node)
-                self.labeldict[self.nodenum] = "CROSS " + cond1 + "X" + cond2
-                self.add_edge(end1, self.nodenum)
-                self.add_edge(end2, self.nodenum)
-                select_endpoints[rel1] = self.nodenum
-                select_endpoints[rel2] = self.nodenum
-                self.nodenum = self.nodenum + 1
-                self.condnum = self.condnum + 1
-
-
-                node = Node(self.nodenum, content=k, nodetype="select")
-                self.cond_to_num[self.condnum] = self.nodenum
-                cond1 = k[cond][0]
-                cond2 = k[cond][1]
-                rel1 = get_table(parser, cond1)
-                rel2 = get_table(parser, cond2)
-                end1 = select_endpoints[rel1]
-                end2 = select_endpoints[rel2]
-                self.G.add_node(self.nodenum, data=node)
-                self.labeldict[self.nodenum] = "SELECT " + cond1 + self.operator_to_sign[cond] + cond2
-                self.add_edge(end1, self.nodenum)
-                self.add_edge(end2, self.nodenum)
-                select_endpoints[rel1] = self.nodenum
-                select_endpoints[rel2] = self.nodenum
-                self.nodenum = self.nodenum + 1
-                self.condnum = self.condnum + 1
+                self.add_node(parser,{"cross": k[cond]},"cross",nodetype="cross")
+                self.add_node(parser,k,cond,nodetype="select")
             pass
             
         # handle or conditions
         rel_name = next(iter(self.parser.relation_names))
-        last_ep = select_endpoints[rel_name]
+        last_ep = self.select_endpoints[rel_name]
         for k in self.or_conditions:
-            node = Node(self.nodenum, content=k[0], nodetype="select")
+            node = Node(self.nodenum, content=k[0], nodetype="or")
             self.cond_to_num[self.condnum] = self.nodenum
             cond = "or"
             self.G.add_node(self.nodenum, data=node)
@@ -237,6 +208,7 @@ class Tree:
         self.condnum = self.condnum + 1
 
         # project optimization
+
 
         pass
 
