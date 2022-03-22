@@ -9,7 +9,7 @@ from moz_sql_parser import parse
 import mysql.connector
 import json
 import sys
-
+    
 from os import curdir
 from re import L
 from select import select
@@ -122,7 +122,6 @@ class Parser:
     def extract_columns(self, token_tree, relation_names):
         column_names = {}
         aggregate_names = {}
-        print(self.alias_of_relation)
         if token_tree["select"] == "*":
             # all columns
             for column in self.schema["COLUMNS"]:
@@ -149,5 +148,4 @@ class Parser:
                 dic = token_tree["select"]
                 key, value = self.parse_column_dict(dic, relation_names)
                 column_names[key] = value
-        print(column_names, aggregate_names)
         return column_names, aggregate_names

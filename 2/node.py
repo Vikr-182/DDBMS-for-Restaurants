@@ -1,7 +1,9 @@
+from heapq import merge
 from ntpath import join
 from operator import truediv
 from platform import node
 import pprint
+# from tkinter import Frame
 from mysql.connector import cursor
 import sqlparse
 import mysql.connector
@@ -57,19 +59,20 @@ class Tree:
         self.labeldict = {}
         self.join_mapping = {}
         self.build(parser=parser)
-        print(self.labeldict)
-        print(list(self.G.nodes))
-        print(list(self.G.edges))
+        self.localize(parser=parser)
+
         pos = graphviz_layout(self.G, prog="dot")
         nx.draw(self.G, labels=self.labeldict, with_labels = True, pos=pos)
         plt.savefig("filename.png")
+        print(self.G.edges)
 
     def add_edge(self, u, v):
-        print(type(self.G.nodes[u]))
         self.G.nodes[u]['data'].parent = v
-        self.G.nodes[v]['data'].child1 = u
-        self.G.nodes[v]['data'].child2 = u
-        self.G.add_edge(v, u)
+        if self.G.nodes[v]['data'].child1 == None:
+            self.G.nodes[v]['data'].child1 = u
+        else:
+            self.G.nodes[v]['data'].child2 = u
+        self.G.add_edge(u, v)
 
     def parse_condition(self, condition, parser):
         type_ = get_type(condition, parser)
@@ -109,6 +112,7 @@ class Tree:
         self.nodenum = self.nodenum + 1
         self.condnum = self.condnum + 1
 
+    # QUERY TREE
     def build(self, parser):
         # build itself using the parser
         self.nodenum = 0
@@ -124,7 +128,6 @@ class Tree:
         self.table_to_num = table_to_num
 
         # build condition tree
-        print(parser.conditions, "AAA")
         for conditions in parser.conditions:
             condition = conditions
             type_ = get_type(condition, parser)
@@ -137,12 +140,9 @@ class Tree:
                     self.condnum = self.condnum + 1
                     self.nodenum = self.nodenum + 1
                 else:
-                    print("OO")
                     # and condition
                     for condition in conditions['and']:
-                        print(self.condnum, "B")
                         type_ = get_type(condition, parser)
-                        print(condition, type_)
                         if type_ == "join":
                             self.join_conditions.append((condition, self.nodenum))
                         else:
@@ -212,4 +212,102 @@ class Tree:
 
         pass
 
-# DATA LOCALIZATION
+    def fragment_vertically(self, parser, table, vert_nodes):
+        if parser.alias_of_relation.get(table['TableName']) != None:
+            relationID = table['idTable']
+            fragmentation_conditions = list(filter(lambda dic: dic["RelationId"] - 1 == relationID, parser.schema["FRAGMENTATION"]))
+            columns = list(filter(lambda dic: dic["TableID"] - 1 == relationID, parser.schema["COLUMNS"]))
+            cols = parser.schema["COLUMNS"]
+            mergecol = None
+            for cond in fragmentation_conditions:
+                mergecol = int(cond["FragmentationCondition"].split(",")[0])
+                node = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="relation")
+                vert_nodes.append(node)
+                self.G.add_node(self.nodenum, data=node)
+                self.labeldict[self.nodenum] = table['TableName'] + "@site" + str(cond["SiteId"])
+                self.nodenum = self.nodenum + 1
+                self.condnum = self.condnum + 1
+            prevnode = vert_nodes[0]
+            for nodelen in range(1, len(vert_nodes)):
+                node = vert_nodes[nodelen]
+                nodee = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="join")
+                self.G.add_node(self.nodenum, data=nodee)
+                self.labeldict[self.nodenum] = "JOIN " + self.labeldict[prevnode.nodenum] + "," + self.labeldict[node.nodenum] + "at " + cols[mergecol]["ColumnName"]
+                self.add_edge(prevnode.nodenum, self.nodenum)
+                self.add_edge(node.nodenum, self.nodenum)
+                self.nodenum = self.nodenum + 1
+                self.condnum = self.condnum + 1
+                prevnode = nodee
+            nodenum = self.table_to_num[parser.alias_of_relation[table['TableName']]]
+            parent = self.G.nodes[nodenum]['data'].parent
+            self.G.nodes[prevnode.nodenum]['data'].parent = parent
+            if self.G.nodes[parent]['data'].child1 == nodenum:
+                # at child1
+                self.G.nodes[parent]['data'].child1 = prevnode.nodenum
+            else:
+                self.G.nodes[parent]['data'].child2 = prevnode.nodenum
+            self.G.remove_edge(nodenum, parent)
+            self.G.add_edge(prevnode.nodenum, parent)
+            self.G.remove_node(nodenum)
+        return vert_nodes
+
+    def fragment_horizontally(self, parser, table, horiz_nodes):
+        if parser.alias_of_relation.get(table['TableName']) != None:
+            relationID = table['idTable']
+            fragmentation_conditions = list(filter(lambda dic: dic["RelationId"] - 1 == relationID, parser.schema["FRAGMENTATION"]))
+            columns = list(filter(lambda dic: dic["TableID"] - 1 == relationID, parser.schema["COLUMNS"]))
+            cols = parser.schema["COLUMNS"]
+            for cond in fragmentation_conditions:
+                node = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="relation")
+                horiz_nodes.append(node)
+                self.G.add_node(self.nodenum, data=node)
+                self.labeldict[self.nodenum] = table['TableName'] + "@site" + str(cond["SiteId"])
+                self.nodenum = self.nodenum + 1
+                self.condnum = self.condnum + 1
+            prevnode = horiz_nodes[0]
+            for nodelen in range(1, len(horiz_nodes)):
+                node = horiz_nodes[nodelen]
+                nodee = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="join")
+                self.G.add_node(self.nodenum, data=nodee)
+                self.labeldict[self.nodenum] = "UNION"
+                self.add_edge(prevnode.nodenum, self.nodenum)
+                self.add_edge(node.nodenum, self.nodenum)
+                self.nodenum = self.nodenum + 1
+                self.condnum = self.condnum + 1
+                prevnode = nodee
+            nodenum = self.table_to_num[parser.alias_of_relation[table['TableName']]]
+            parent = self.G.nodes[nodenum]['data'].parent
+            self.G.nodes[prevnode.nodenum]['data'].parent = parent
+            if self.G.nodes[parent]['data'].child1 == nodenum:
+                # at child1
+                self.G.nodes[parent]['data'].child1 = prevnode.nodenum
+            else:
+                self.G.nodes[parent]['data'].child2 = prevnode.nodenum
+            self.G.remove_edge(nodenum, parent)
+            self.G.add_edge(prevnode.nodenum, parent)
+            # self.G.remove_node(nodenum)
+        return horiz_nodes
+
+    # DATA LOCALIZATION
+    def localize(self, parser):
+        # find tables VF
+        tables_vertical = list(filter(lambda dic: dic["FragmentationType"] == "V", parser.schema["RELATIONS"]))
+        # break all by join
+        vert_nodes = []
+        for table in tables_vertical:
+            vert_nodes = self.fragment_vertically(parser, table, vert_nodes)
+
+        # # find tables HF
+        tables_horizontal = filter(lambda dic: dic["FragmentationType"] == "H", parser.schema["RELATIONS"])
+        # # break all by union
+        horiz_nodes = []
+        for table in tables_horizontal:
+            horiz_nodes = self.fragment_horizontally(parser, table, horiz_nodes)
+
+        # # find tables DHF
+        tables_dhf = filter(lambda dic: dic["FragmentationType"] == "DH", parser.schema["RELATIONS"])
+        # # break all by union        
+        horiz_nodes = []
+        for table in tables_dhf:
+            horiz_nodes = self.fragment_horizontally(parser, table, horiz_nodes)    
+        pass
