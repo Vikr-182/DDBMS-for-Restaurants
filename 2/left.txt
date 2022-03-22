@@ -1,2 +1,4 @@
 1. Handle aggregate.
 2. Push project down.
+3. Handle OR.
+4. Rewrite tree for localization.
