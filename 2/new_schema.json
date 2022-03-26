@@ -1,0 +1,214 @@
+{
+      "RELATIONS": [
+            {
+                  "idTable": 0,
+                  "TableName": "menu",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "H",
+                  "FragCount": 2,
+                  "collist": [
+                        "menu.itemname",
+                        "menu.zone",
+                        "menu.itemprice "
+                  ]
+            },
+            {
+                  "idTable": 1,
+                  "TableName": "user",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "V",
+                  "FragCount": 2,
+                  "collist": [
+                        "user.address",
+                        "user.id",
+                        "user.name"
+                  ]
+            },
+            {
+                  "idTable": 2,
+                  "TableName": "item",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "DH",
+                  "FragCount": 2,
+                  "collist": [
+                        "item.itemname",
+                        "item.menuid",
+                        "item.quantity"
+                  ]
+            },
+            {
+                  "idTable": 3,
+                  "TableName": "tab",
+                  "ColumnsNo": 5,
+                  "FragmentationType": "None",
+                  "FragCount": 1,
+                  "collist": [
+                        "tab.hello",
+                        "tab.your",
+                        "tab.name",
+                        "tab.is",
+                        "tab.vc"
+                  ]
+            }
+      ],
+      "FRAGMENTATION": [
+            {
+                  "FragmentationID": 0,
+                  "FragmentationCondition": "Menu.zone=north",
+                  "SiteId": "1",
+                  "RelationId": 0
+            },
+            {
+                  "FragmentationID": 1,
+                  "FragmentationCondition": "Menu.zone=south",
+                  "SiteId": "2",
+                  "RelationId": 0
+            },
+            {
+                  "FragmentationID": 2,
+                  "FragmentationCondition": "3,4",
+                  "SiteId": "1",
+                  "RelationId": 1
+            },
+            {
+                  "FragmentationID": 3,
+                  "FragmentationCondition": "3,5",
+                  "SiteId": "2",
+                  "RelationId": 1
+            },
+            {
+                  "FragmentationID": 4,
+                  "FragmentationCondition": "Restaurant,Menu.zone=NORTH",
+                  "SiteId": "1",
+                  "RelationId": 2
+            },
+            {
+                  "FragmentationID": 5,
+                  "FragmentationCondition": "Restaurant,Menu.zone=NORTH",
+                  "SiteId": "2",
+                  "RelationId": 2
+            },
+            {
+                  "FragmentationID": 6,
+                  "FragmentationCondition": "None",
+                  "SiteId": "1",
+                  "RelationId": 3
+            }
+      ],
+      "COLUMNS": [
+            {
+                  "ColumnID": 0,
+                  "ColumnType": "String",
+                  "ColumnName": "itemname",
+                  "TableID": 0
+            },
+            {
+                  "ColumnID": 1,
+                  "ColumnType": "String",
+                  "ColumnName": "zone",
+                  "TableID": 0
+            },
+            {
+                  "ColumnID": 2,
+                  "ColumnType": "String",
+                  "ColumnName": "itemprice ",
+                  "TableID": 0
+            },
+            {
+                  "ColumnID": 3,
+                  "ColumnType": "String",
+                  "ColumnName": "id",
+                  "TableID": 1
+            },
+            {
+                  "ColumnID": 4,
+                  "ColumnType": "String",
+                  "ColumnName": "name",
+                  "TableID": 1
+            },
+            {
+                  "ColumnID": 5,
+                  "ColumnType": "String",
+                  "ColumnName": "address",
+                  "TableID": 1
+            },
+            {
+                  "ColumnID": 6,
+                  "ColumnType": "String",
+                  "ColumnName": "itemname",
+                  "TableID": 2
+            },
+            {
+                  "ColumnID": 7,
+                  "ColumnType": "String",
+                  "ColumnName": "menuid",
+                  "TableID": 2
+            },
+            {
+                  "ColumnID": 8,
+                  "ColumnType": "String",
+                  "ColumnName": "quantity",
+                  "TableID": 2
+            },
+            {
+                  "ColumnID": 9,
+                  "ColumnType": "String",
+                  "ColumnName": "hello",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 10,
+                  "ColumnType": "String",
+                  "ColumnName": "your",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 11,
+                  "ColumnType": "String",
+                  "ColumnName": "name",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 12,
+                  "ColumnType": "String",
+                  "ColumnName": "is",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 13,
+                  "ColumnType": "String",
+                  "ColumnName": "vc",
+                  "TableID": 3
+            }
+      ],
+      "SITES": [
+            {
+                  "idSite": 1,
+                  "User": "user",
+                  "ip": "10.3.5.211",
+                  "password": "iiit123",
+                  "HostName": "CP5"
+            },
+            {
+                  "idSite": 2,
+                  "User": "user",
+                  "ip": "10.3.5.208",
+                  "password": "iiit123",
+                  "HostName": "CP6"
+            },
+            {
+                  "idSite": 3,
+                  "User": "user",
+                  "ip": "10.3.5.204",
+                  "password": "iiit123",
+                  "HostName": "CP7"
+            },
+            {
+                  "idSite": 4,
+                  "User": "user",
+                  "ip": "10.3.5.205",
+                  "password": "iiit123",
+                  "HostName": "CP8"
+            }
+      ]
+}
