@@ -42,10 +42,14 @@ class Parser:
         relation_names = {}
         if inner_join_exists(token_tree):
             # either join or multiple relations in from
-            for dic in token_tree['from'][:-1]:
-                relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
-            dic = token_tree['from'][-1]['inner join']
-            relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
+            indices = get_indices_join(token_tree)
+            for ind in range(len(token_tree['from'])):
+                if ind not in indices:
+                    dic = token_tree['from'][ind]
+                    relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
+                else:
+                    dic = token_tree['from'][ind]['inner join']
+                    relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
         elif type(token_tree['from']) == list:
             # no join condition
             for dic in token_tree['from']:
@@ -67,7 +71,9 @@ class Parser:
         conditions = []
         if inner_join_exists(token_tree):
             # either join or multiple relations in from , if last one is dict, it is inner join
-            conditions.append(token_tree['from'][-1]['on'])
+            indices = get_indices_join(token_tree)
+            for ind in indices:
+                conditions.append(token_tree['from'][ind]['on'])
         if token_tree.get('where') != None:
             # where condition
             conditions.append(token_tree['where'])
@@ -143,8 +149,12 @@ class Parser:
         else:
             # single column name
             dic = token_tree["select"]
-            key, value = self.parse_column_dict(dic)
-            column_names[key] = value
+            if type(dic.get("value")) == dict:
+                key, value = self.parse_aggregate_column_dict(dic)
+                aggregate_names[key] =  value
+            else:
+                key, value = self.parse_column_dict(dic)
+                column_names[key] = value
         return column_names, aggregate_names
     
     def extract_groupby(self, token_tree):
@@ -160,4 +170,4 @@ class Parser:
     def extract_limit(self, token_tree):
         if token_tree.get('limit') != None:
             return token_tree['limit']
-        return {}        
+        return {}
