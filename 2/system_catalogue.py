@@ -20,7 +20,7 @@ SYS_CAT_TABLES = ['Columns','Relations','Fragmentation','Site']
 APP_DB_TABLES = ['Restaurants', 'Menu','OrderItem','Orders','Users']
 # NON_FRAG_REALTIONS = set(['Categories','Products','Inventories','Vendors','Customers','Addresses'])
 
-with open("../schema.json") as f:
+with open("./new_schema.json") as f:
     DIC = json.load(f)
 
 with open("../schema_type.json") as f:
@@ -90,6 +90,10 @@ if __name__ == '__main__':
             pass
         #clearAppDB(site["ip"])
         for tableName, tableRows in DIC.items():
+            print('='*30)
+            print (tableRows)
+            print (tableName)
+            print('='*30)
             schem = SCHEMA[tableName]
             string = []
             for key, val in schem.items():
@@ -97,6 +101,8 @@ if __name__ == '__main__':
             print(string)
             createTable(site["ip"], tableName, ",".join(string))
             for row in tableRows:
+                print (row.keys())
                 keys = ",".join([str(a) for a in list(row.keys())])
+                print (row.values())
                 values = ",".join([retval(a) for a in list(row.values())])
                 insertIntoTable(site["ip"], tableName, keys, values)

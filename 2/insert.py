@@ -48,7 +48,7 @@ for row in spamreader:
             for iname in columnlist:
                 newcoldict = {}
                 newcoldict['ColumnID'] = len(columnset)
-                newcoldict['ColumnType'] = 'String'
+                newcoldict['ColumnType'] = 'Varchar (50)'
                 newcoldict['ColumnName'] = iname.split('.')[1]
                 newcoldict['TableID'] = len(tableset)
                 bigcolumnlist.append(newcoldict)
@@ -105,7 +105,7 @@ for row in spamreader:
             for iname in columnlist:
                 newcoldict = {}
                 newcoldict['ColumnID'] = len(columnset)
-                newcoldict['ColumnType'] = 'String'
+                newcoldict['ColumnType'] = 'Varchar (50)'
                 newcoldict['ColumnName'] = iname.split('.')[1]
                 newcoldict['TableID'] = len(tableset)
                 bigcolumnlist.append(newcoldict)
@@ -133,7 +133,7 @@ for row in spamreader:
                             print ("LOLOLOLOL", pkk)
                             newcoldict = {}
                             newcoldict['ColumnID'] = len(columnset)
-                            newcoldict['ColumnType'] = 'String'
+                            newcoldict['ColumnType'] = 'Varchar (50)'
                             newcoldict['ColumnName'] = pkk.split('.')[1]
                             newcoldict['TableID'] = tabid
                             bigcolumnlist.append(newcoldict)
@@ -173,7 +173,7 @@ for row in spamreader:
             for iname in columnlist:
                 newcoldict = {}
                 newcoldict['ColumnID'] = len(columnset)
-                newcoldict['ColumnType'] = 'String'
+                newcoldict['ColumnType'] = 'Varchar (50)'
                 newcoldict['ColumnName'] = iname.split('.')[1]
                 newcoldict['TableID'] = len(tableset)
                 bigcolumnlist.append(newcoldict)
@@ -252,6 +252,10 @@ siteslist =  [
     ]
 
 bigjson['SITES'] = siteslist
+
+for i in bigjson['RELATIONS']:
+    del i['collist']
+
 
 
 import json

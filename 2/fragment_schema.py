@@ -22,7 +22,7 @@ SYS_CAT_TABLES = ['Columns','Relations','Fragmentation','Site']
 APP_DB_TABLES = ['Restaurants', 'Menu','OrderItem','Orders','Users']
 # NON_FRAG_REALTIONS = set(['Categories','Products','Inventories','Vendors','Customers','Addresses'])
 
-with open("../schema.json") as f:
+with open("./new_schema.json") as f:
     DIC = json.load(f)
 
 with open("../schema_type.json") as f:
@@ -49,13 +49,15 @@ def clearAppDB(servername):
 
 
 def createTable(servername, tableName, columns):
-    print(tableName, columns)
+    #print(tableName, columns)
     QUERY = " CREATE TABLE IF NOT EXISTS {} ({});".format(tableName, columns)
-    print(QUERY)
+    print(QUERY,servername)
     db = mysql.connector.connect(host = servername, user = USERNAME, password = PASSWORD, database=DB)
     cursor = db.cursor()
     cursor.execute(QUERY)
+    cursor.close()
     db.commit()
+    db.close()
     return
 
 def insertIntoTable(servername, tableName, keys, values):
@@ -81,12 +83,15 @@ if __name__ == '__main__':
     for sit in DIC["SITES"]:
         try:
             clearAppDB(sit["ip"])
+        except Exception as e:
+            print("EXCEPTION", e)
+        try:
             createDB(sit["ip"])
-        except:
-            pass
+        except Exception as e:
+            print("EXCEPTION", e)
     for row in DIC["FRAGMENTATION"]:
-        RELATION = DIC["RELATIONS"][row["RelationId"] - 1]
-        SITE = DIC["SITES"][row["SiteId"] - 1]
+        RELATION = DIC["RELATIONS"][row["RelationId"] ]
+        SITE = DIC["SITES"][int(row["SiteId"]) - 1]
         if RELATION["FragmentationType"] != "V":
             # just create the table from similar columns
             similarcols = []
@@ -97,6 +102,6 @@ if __name__ == '__main__':
             createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
         else:
             # create table with vertical splits
-            print(row["FragmentationCondition"])
             string = [DIC["COLUMNS"][int(colid)]["ColumnName"] + " " + DIC["COLUMNS"][int(colid)]["ColumnType"] for colid in row["FragmentationCondition"].split(",")]
             createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+

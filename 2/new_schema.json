@@ -5,62 +5,40 @@
                   "TableName": "menu",
                   "ColumnsNo": 3,
                   "FragmentationType": "H",
-                  "FragCount": 2,
-                  "collist": [
-                        "menu.itemname",
-                        "menu.zone",
-                        "menu.itemprice "
-                  ]
+                  "FragCount": 2
             },
             {
                   "idTable": 1,
                   "TableName": "user",
                   "ColumnsNo": 3,
                   "FragmentationType": "V",
-                  "FragCount": 2,
-                  "collist": [
-                        "user.address",
-                        "user.id",
-                        "user.name"
-                  ]
+                  "FragCount": 2
             },
             {
                   "idTable": 2,
                   "TableName": "item",
                   "ColumnsNo": 3,
                   "FragmentationType": "DH",
-                  "FragCount": 2,
-                  "collist": [
-                        "item.itemname",
-                        "item.menuid",
-                        "item.quantity"
-                  ]
+                  "FragCount": 2
             },
             {
                   "idTable": 3,
                   "TableName": "tab",
                   "ColumnsNo": 5,
                   "FragmentationType": "None",
-                  "FragCount": 1,
-                  "collist": [
-                        "tab.hello",
-                        "tab.your",
-                        "tab.name",
-                        "tab.is",
-                        "tab.vc"
-                  ]
+                  "FragCount": 1
             }
       ],
       "FRAGMENTATION": [
             {
                   "FragmentationID": 0,
-                  "FragmentationCondition": "Menu.zone=north",
+                  "FragmentationCondition": "Menu.zone==north",
                   "SiteId": "1",
                   "RelationId": 0
             },
             {
                   "FragmentationID": 1,
-                  "FragmentationCondition": "Menu.zone=south",
+                  "FragmentationCondition": "Menu.zone==south",
                   "SiteId": "2",
                   "RelationId": 0
             },
@@ -78,13 +56,13 @@
             },
             {
                   "FragmentationID": 4,
-                  "FragmentationCondition": "Restaurant,Menu.zone=NORTH",
+                  "FragmentationCondition": "menuid,itemname,menu.zone==north",
                   "SiteId": "1",
                   "RelationId": 2
             },
             {
                   "FragmentationID": 5,
-                  "FragmentationCondition": "Restaurant,Menu.zone=NORTH",
+                  "FragmentationCondition": "menuid,itemname,menu.zone==south",
                   "SiteId": "2",
                   "RelationId": 2
             },
@@ -98,85 +76,85 @@
       "COLUMNS": [
             {
                   "ColumnID": 0,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "itemname",
                   "TableID": 0
             },
             {
                   "ColumnID": 1,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "zone",
                   "TableID": 0
             },
             {
                   "ColumnID": 2,
-                  "ColumnType": "String",
-                  "ColumnName": "itemprice ",
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "itemprice",
                   "TableID": 0
             },
             {
                   "ColumnID": 3,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "id",
                   "TableID": 1
             },
             {
                   "ColumnID": 4,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "name",
                   "TableID": 1
             },
             {
                   "ColumnID": 5,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "address",
                   "TableID": 1
             },
             {
                   "ColumnID": 6,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "itemname",
                   "TableID": 2
             },
             {
                   "ColumnID": 7,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "menuid",
                   "TableID": 2
             },
             {
                   "ColumnID": 8,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "quantity",
                   "TableID": 2
             },
             {
                   "ColumnID": 9,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "hello",
                   "TableID": 3
             },
             {
                   "ColumnID": 10,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "your",
                   "TableID": 3
             },
             {
                   "ColumnID": 11,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "name",
                   "TableID": 3
             },
             {
                   "ColumnID": 12,
-                  "ColumnType": "String",
-                  "ColumnName": "is",
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "istt",
                   "TableID": 3
             },
             {
                   "ColumnID": 13,
-                  "ColumnType": "String",
+                  "ColumnType": "Varchar (50)",
                   "ColumnName": "vc",
                   "TableID": 3
             }

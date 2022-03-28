@@ -72,8 +72,11 @@ def createTable(servername, tableName, columns):
     return
 
 def insertIntoTable(servername, tableName, keys, values):
-    QUERY = " INSERT INTO TABLE {} ({}) VALUES ({});".format(tableName,keys, values)
+    QUERY = " INSERT INTO {} ({}) VALUES ({});".format(tableName,keys, values)
+    print ('*'*30)
     print(QUERY)
+    print (SITE)
+    print ('*'*30)
     db = mysql.connector.connect(host = servername, user = USERNAME, password = PASSWORD, database=DB)
     cursor = db.cursor()
     cursor.execute(QUERY)
@@ -89,7 +92,153 @@ def createDB(servername):
     db.commit()
     return    
 
+def parsehcond(rowobj,cond):
+    cond=cond.split('.')[1]
+    if '<=' in cond:
+        colname = cond.split('<=')[0]
+        colval = cond.split('<=')[1]
+        if int(rowobj[colname]) <= int(colval):
+            return True
+        else :
+            return False 
+    elif '<' in cond :
+        colname = cond.split('<')[0]
+        colval = cond.split('<')[1]
+        if int(rowobj[colname]) < int(colval):
+            return True
+        else :
+            return False   
+    elif '>=' in cond :
+        colname = cond.split('>=')[0]
+        colval = cond.split('>=')[1]
+        if int(rowobj[colname]) >= int(colval):
+            return True
+        else :
+            return False  
+    elif '>' in cond :
+        colname = cond.split('>')[0]
+        colval = cond.split('>')[1]
+        if int(rowobj[colname]) > int(colval):
+            return True
+        else :
+            return False  
+    elif '!=' in cond :
+        colname = cond.split('!=')[0]
+        colval = cond.split('!=')[1]
+        try :
+            if int(rowobj[colname]) != int(colval):
+                return True
+            else :
+                return False 
+        except :
+            if rowobj[colname].strip() != colval.strip():
+                return True
+            else :
+                return False 
 
+    elif '==' in cond :
+        colname = cond.split('==')[0]
+        colval = cond.split('==')[1]
+        try:
+            if int(rowobj[colname]) == int(colval):
+                return True
+            else :
+                return False
+        except:
+            if rowobj[colname].strip() == colval.strip():
+                return True
+            else :
+                return False
+                        
+
+def parsedhcond(rowobj,cond):
+    condlist = cond.split(',')
+    #print (condlist,"lololololololol")
+    thatTableKey = condlist[1]
+    forKey = condlist[0]
+    #print (condlist[2].split('.')[1])
+    cond=condlist[2].split('.')[1]
+    #print (cond)
+    thatTableName = condlist[2].split('.')[0]
+    #print (thatTableName)
+    for aname in range(len(tablenames)):
+        if tablenames[aname] == thatTableName:
+            tableind = aname
+
+
+    """
+    print (rowobj, forKey,"lol rowobj")
+    print (type(dflist[tableind]))
+    print (rowobj[forKey])
+    print ("====")
+    print (rowobj)
+    print ("YAAR BAHAR NIKAL")
+    """
+    rowdf = rowobj.to_frame().T
+    mergedf = pd.merge(rowdf, dflist[tableind], left_on=forKey, right_on=thatTableKey)
+    #print (rowdf.head())
+    print ('-*-'*30)
+    print (mergedf)
+    print (cond)
+    print ('-*-'*30)
+
+    mergedf = mergedf.iloc[0]
+    if '<=' in cond:
+        colname = cond.split('<=')[0]
+        colval = cond.split('<=')[1]
+        if int(mergedf[colname]) <= int(colval):
+            return True
+        else :
+            return False 
+    elif '<' in cond :
+        colname = cond.split('<')[0]
+        colval = cond.split('<')[1]
+        if int(mergedf[colname]) < int(colval):
+            return True
+        else :
+            return False   
+    elif '>=' in cond :
+        colname = cond.split('>=')[0]
+        colval = cond.split('>=')[1]
+        if int(mergedf[colname]) >= int(colval):
+            return True
+        else :
+            return False  
+    elif '>' in cond :
+        colname = cond.split('>')[0]
+        colval = cond.split('>')[1]
+        if int(mergedf[colname]) > int(colval):
+            return True
+        else :
+            return False  
+    elif '!=' in cond :
+        colname = cond.split('!=')[0]
+        colval = cond.split('!=')[1]
+        try :
+            if int(mergedf[colname]) != int(colval):
+                return True
+            else :
+                return False 
+        except :
+            if mergedf[colname].strip() != colval.strip():
+                return True
+            else :
+                return False 
+    elif '==' in cond :
+        colname = cond.split('==')[0]
+        colval = cond.split('==')[1]
+        #print (mergedf[colname].strip(),colval.strip(),"AAAAAAAAAAA")
+        try:
+            if int(mergedf[colname]) == int(colval):
+                return True
+            else :
+                return False
+        except:
+            if mergedf[colname].strip() == colval.strip():
+                return True
+            else :
+                return False
+                
 
 csvfile = open('given.csv')
 
@@ -107,16 +256,10 @@ tabldf1 = pd.read_csv(table1)
 tabldf2 = pd.read_csv(table2)
 tabldf3 = pd.read_csv(table3)
 
+dflist = [tabldf1,tabldf2,tabldf3]
 tablenames = [table1.split('.')[0],table2.split('.')[0],table3.split('.')[0]]
 fragtype = []
 
-
-for sit in schema["SITES"]:
-    try:
-        clearAppDB(sit["ip"])
-        createDB(sit["ip"])
-    except:
-        pass
 
 
 for i in tablenames:
@@ -145,13 +288,177 @@ for i in range(len(tablenames)):
                 #print ('='*30)
                 for col in fragcols.split(','):
                     for k in bigcollist:
-                        if k['ColumnID'] == col :
-                            fragcolname.appned(k)
+                        #print (col,k['ColumnID'])
+                        if int(k['ColumnID']) == int(col) :
+                            fragcolname.append(k['ColumnName'])
+                #print(j["FragmentationCondition"])
+                #keys = [bigcollist[int(colid)]["ColumnName"] + " " + bigcollist[int(colid)]["ColumnType"] for colid in j["FragmentationCondition"].split(',')]
+                keys = [bigcollist[int(colid)]["ColumnName"]  for colid in j["FragmentationCondition"].split(',')]
+                #print (dflist[i].columns)
+                #print (fragcolname)
+                subset = dflist[i][fragcolname]
+                #print (subset)
+                #print (tabldf1)
+                #print (keys)
+                for index,onerow in subset.iterrows():
+                    print ('='*30)
+                    values = []
+                    for kkl in fragcolname:
+                        print (onerow[kkl])
+                        try:
+                            int(onerow[kkl])
+                            values.append(onerow[kkl])
+                        except:
+                            values.append("'"+onerow[kkl]+"'")
+                    print(keys)
+                    keys = [str(kkk) for kkk in keys]
+                    values = [str(kkk) for kkk in values]
+                    print(values)
+                    print(tablenames[i],','.join(keys),','.join(values))
+                    insertIntoTable(SITE["ip"], tablenames[i], ','.join(keys), ','.join(values))
+                    print ('='*30)
+
+
+
+    elif fragtype[i] == 'H':
+        for j in relationlist:
+            print (j)
+            if j['TableName'] == tablenames[i]:
+                tableid = j['idTable']
+
+        for j in fraglist:
+            if j['RelationId'] == tableid:
+                fragcond = j['FragmentationCondition']
+                site = int(j['SiteId'])
+                SITE = schema["SITES"][site - 1]
+                fragcolname = []
+
+                for k in bigcollist:
+                    #print (col,k['ColumnID'])
+                    if int(k['TableID']) == int(tableid) :
+                        fragcolname.append(k['ColumnName'])
+
+                keys = fragcolname
+
+                subset = dflist[i][fragcolname]
+                #print (subset)
+
+                #print (keys)
+                for index,onerow in subset.iterrows():
+                    if parsehcond(onerow,fragcond):
+                        print ('='*30)
+                        values = []
+                        for kkl in fragcolname:
+                            try:
+                                int(onerow[kkl])
+                                values.append(onerow[kkl])
+                            except:
+                                values.append("'"+onerow[kkl]+"'")
+                            print (onerow[kkl])
+                        print(keys)
+                        keys = [str(kkk) for kkk in keys]
+                        values = [str(kkk) for kkk in values]
+                        print(values)
+                        print(tablenames[i],','.join(keys),','.join(values))
+                        insertIntoTable(SITE["ip"], tablenames[i], ','.join(keys), ','.join(values))
+                        print ('='*30)
+
+
+
+    elif fragtype[i] == 'DH':
+        for j in relationlist:
+            print (j)
+            if j['TableName'] == tablenames[i]:
+                tableid = j['idTable']
+
+        for j in fraglist:
+            if j['RelationId'] == tableid:
+                fragcond = j['FragmentationCondition']
+                site = int(j['SiteId'])
+                SITE = schema["SITES"][site - 1]
+                fragcolname = []
+
+                for k in bigcollist:
+                    #print (col,k['ColumnID'])
+                    if int(k['TableID']) == int(tableid) :
+                        fragcolname.append(k['ColumnName'])
+
+                keys = fragcolname
+
+                subset = dflist[i][fragcolname]
+                #print (subset)
+
+                #print (keys)
+                for index,onerow in subset.iterrows():
+                    if parsedhcond(onerow,fragcond):
+                        print ('='*30)
+                        values = []
+                        for kkl in fragcolname:
+                            try:
+                                int(onerow[kkl])
+                                values.append(onerow[kkl])
+                            except:
+                                values.append("'"+onerow[kkl]+"'")
+                            print (onerow[kkl])
+                        print(keys)
+                        keys = [str(kkk) for kkk in keys]
+                        values = [str(kkk) for kkk in values]
+                        print(values)
+                        print(tablenames[i],','.join(keys),','.join(values))
+                        insertIntoTable(SITE["ip"], tablenames[i], ','.join(keys), ','.join(values))
+                        print ('='*30)
+
+
+
+
+
+
+
+
+
+
+
+    else :
+        for j in relationlist:
+            print (j)
+            if j['TableName'] == tablenames[i]:
+                tableid = j['idTable']
+
+        for j in fraglist:
+            if j['RelationId'] == tableid:
+                fragcond = j['FragmentationCondition']
+                site = int(j['SiteId'])
+                SITE = schema["SITES"][site - 1]
+                fragcolname = []
                 
-                print(j["FragmentationCondition"])
-                keys = [bigcollist[int(colid)]["ColumnName"] + " " + bigcollist[int(colid)]["ColumnType"] for colid in j["FragmentationCondition"].split(',')]
-                subset = tabldf1[fragcolname]
-                for onerow in subset:
-                    print (onerow)
-                # insertIntoTable(SITE["ip"], tablenames[i], ','join(keys), values)
+                for k in bigcollist:
+                    #print (col,k['ColumnID'])
+                    if int(k['TableID']) == int(tableid) :
+                        fragcolname.append(k['ColumnName'])
+
+                keys = fragcolname
+                subset = dflist[i][fragcolname]
+                #print (subset)
+                #print (tabldf1)
+                #print (keys)
+                for index,onerow in subset.iterrows():
+                    print ('='*30)
+                    values = []
+                    for kkl in fragcolname:
+                        try:
+                            int(onerow[kkl])
+                            values.append(onerow[kkl])
+                        except:
+                            values.append("'"+onerow[kkl]+"'")
+                    print(keys)
+                    keys = [str(kkk) for kkk in keys]
+                    values = [str(kkk) for kkk in values]
+                    print(values)
+                    print(tablenames[i],','.join(keys),','.join(values))
+                    insertIntoTable(SITE["ip"], tablenames[i], ','.join(keys), ','.join(values))
+                    print ('='*30)
+
+
+
+
 
