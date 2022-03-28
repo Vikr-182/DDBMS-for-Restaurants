@@ -1,6 +1,8 @@
 # check if aggregate queries
 from tabnanny import check
 
+def inner_join_exists(token_tree) -> bool:
+    return type(token_tree['from']) == list and type(token_tree['from'][-1]) == dict  and token_tree['from'][-1].get('inner join') != None
 
 def is_aggregate_column(name) -> bool:
     if name[:3].upper() in ["MAX", "SUM", "AVG", "MIN"]:
@@ -51,19 +53,15 @@ def get_type(cond, parser=None) -> str:
     return list(cond.keys())[0]
 
 # find which table column is in
-def findTable(schema, col, tablename=None):
-    found = False
-    if tablename != None:
-        found = True
-        return tablename
-    for column in schema["COLUMNS"]:
-        if column["ColumnName"] == col:
-            col = column["TableID"]
-            found = True
-            break
-    if not found:
+def findTable(relation_names, schema, col):
+    if len(col.split(".")) > 1:
+        # if name of column contains it, then return it
+        return  relation_names[col.split(".")[0]]
+    columns = list(filter(lambda dic: dic["ColumnName"] == col, schema["COLUMNS"]))
+    if len(columns) == 0:
         print("COLUMN {} not found !".format(col))
         exit()
-    for table in schema["RELATIONS"]:
-        if table["idTable"] == col - 1:
-            return table["TableName"]
+    else:
+        column = columns[0]
+        table = list(filter(lambda dic: dic["idTable"] == column["TableID"], schema["RELATIONS"]))[0]
+        return table["TableName"]

@@ -117,7 +117,7 @@
         },
         {
             "FragmentationID": 9,
-            "FragmentationCondition": "9,11,10",
+            "FragmentationCondition": "9,10",
             "SiteId": 1,
             "RelationId": 3
         },
@@ -135,12 +135,18 @@
         },
         {
             "FragmentationID": 11,
+            "FragmentationCondition": "9,11",
+            "SiteId": 4,
+            "RelationId": 3
+        },        
+        {
+            "FragmentationID": 12,
             "FragmentationCondition": "None",
             "SiteId": 4,
             "RelationId": 4
         },
         {
-            "FragmentationID": 11,
+            "FragmentationID": 13,
             "FragmentationCondition": "None",
             "SiteId": 4,
             "RelationId": 5
@@ -273,7 +279,7 @@
             "ColumnName": "MenuID",
             "TableID": 5
         },
-        {
+           {
             "ColumnID": 21,
             "ColumnType": "int",
             "ColumnName": "OrderID",
