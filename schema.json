@@ -93,7 +93,7 @@
         },
         {
             "FragmentationID": 5,
-            "FragmentationCondition": "Restaurant,zone=NORTH",
+            "FragmentationCondition": "Restaurant,Restaurant.RestaurantID=Menu.RestaurantID,zone=NORTH",
             "SiteId": 1,
             "RelationId": 2
         },

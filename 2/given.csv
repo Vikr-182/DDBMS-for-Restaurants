@@ -1,0 +1,8 @@
+Fragment Name,Fragmentation Type,Allocated site,Fragmentation Condition,Columns
+menu1,H,1,Menu.zone==north,"menu.itemname,menu.zone,menu.itemprice"
+menu2,H,2,Menu.zone==south,"menu.itemname,menu.zone,menu.itemprice"
+User1,V,1,,"user.id,user.name"
+User2,V,2,,"user.id,user.address"
+item,DH,1,"menuid,itemname,menu.zone==north","item.itemname,item.menuid,item.quantity"
+Item2,DH,2,"menuid,itemname,menu.zone==south","item.itemname,item.menuid,item.quantity"
+FullTAB,None,1,None,"tab.hello,tab.your,tab.name,tab.istt,tab.vc"
