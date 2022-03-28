@@ -1,6 +1,8 @@
 import csv
+import sys
 
-csvfile = open('given.csv')
+filename1= sys.argv[1]
+csvfile = open(filename1)
 
 spamreader = csv.reader(csvfile)
 
