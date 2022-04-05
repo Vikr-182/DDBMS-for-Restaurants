@@ -1,0 +1,11 @@
+Unlocalized - 
+1. Project down
+2. Select down 
+    a. Reorder so that most selective one first
+    b. 
+
+
+Localized - 
+1. VF - eliminating projects
+2. HF - conditional (?)
+3. DHF - clubbing sitewise

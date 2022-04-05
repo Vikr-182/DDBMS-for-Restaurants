@@ -25,9 +25,12 @@ class Parser:
         self.alias_of_relation = {}
         self.token_tree = self.parse_into_tokens(query=self.query)
         self.relation_names = self.extract_table_names(self.token_tree)
-        self.conditions = self.extract_conditions(self.token_tree, self.relation_names)
-        self.groupby = self.extract_groupby(self.token_tree, self.relation_names)
+        self.conditions = self.extract_conditions(self.token_tree)
         self.column_names, self.aggregate_names = self.extract_columns(self.token_tree, self.relation_names)
+
+        self.groupby = self.extract_groupby(self.token_tree)
+        self.orderby = self.extract_orderby(self.token_tree)
+        self.limit = None
 
     def parse_into_tokens(self, query):
         token_tree = parse(sqlparse.format(query, keyword_case='upper'))
@@ -37,18 +40,18 @@ class Parser:
 
     def extract_table_names(self, token_tree):
         relation_names = {}
-        if type(token_tree['from']) == list: # either join or multiple relations in from
-            if type(token_tree['from'][-1]) == dict and token_tree['from'][-1].get('inner join') != None:
-                # if last one is dict, it is inner join
-                for dic in token_tree['from'][:-1]:
-                    relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
-                dic = token_tree['from'][-1]['inner join']
+        if inner_join_exists(token_tree):
+            # either join or multiple relations in from
+            for dic in token_tree['from'][:-1]:
                 relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
-            else:
-                # where condition
-                for dic in token_tree['from']:
-                    relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
-        else: # plain SQL query
+            dic = token_tree['from'][-1]['inner join']
+            relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
+        elif type(token_tree['from']) == list:
+            # no join condition
+            for dic in token_tree['from']:
+                relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
+        else: 
+            # plain SQL query
             dic = token_tree['from']
             relation_names[dic['name'] if type(dic) == dict else dic] = dic['value'] if type(dic) == dict else dic
         print(relation_names)
@@ -60,36 +63,22 @@ class Parser:
         dic.append(cond)
         return dic    
 
-    def extract_conditions(self, token_tree, relation_names):
+    def extract_conditions(self, token_tree):
         conditions = []
-        if type(token_tree['from']) == list: # either join or multiple relations in from
-            if type(token_tree['from'][-1]) == dict  and token_tree['from'][-1].get('inner join') != None:
-                # if last one is dict, it is inner join
-                conditions = self.parse_condition_block(token_tree['from'][-1]['on'])
-            else:
-                # where condition
-                conditions = self.parse_condition_block(token_tree['where'], conditions)
-        else: # plain SQL query, where clause will have conditions
-            dic = token_tree['where']
-            conditions = self.parse_condition_block(token_tree['from']['inner join']['on'], conditions)
+        if inner_join_exists(token_tree):
+            # either join or multiple relations in from , if last one is dict, it is inner join
+            conditions.append(token_tree['from'][-1]['on'])
+        if token_tree.get('where') != None:
+            # where condition
+            conditions.append(token_tree['where'])
         if token_tree.get('having') != None:
-            conditions = self.parse_condition_block(token_tree['having'], conditions)
-        print(conditions)
+            # having condition
+            conditions.append(token_tree['having'])
         return conditions
-    
-    def extract_groupby(self, token_tree, relation_names):
-        if token_tree.get('groupby') != None:
-            return [token_tree['groupby']['value']]
-        return []
 
-    def parse_column_dict(self, column_dict, relation_names=None):
+    def parse_column_dict(self, column_dict):
         keyy = column_dict["value"]
         key = keyy
-        tableInName = False
-        if len(key.split(".")) > 1:
-            # contains the column name
-            tablename = key.split(".")[0]
-            tableInName = True
         key = column_dict["value"].split(".")[-1] # if column name of format A.Col, then only select Col
         value = key
         if column_dict.get("name") != None:
@@ -97,10 +86,7 @@ class Parser:
             keyy = key
 
         # find out which relation the column belongs to
-        if not tableInName:
-            value = findTable(self.schema, value) + "." + value
-        else:
-            value = findTable(self.schema, value, tablename=tablename) + "." + value
+        value = findTable(self.relation_names, self.schema, value) + "." + value
         return keyy,value
 
     # parses aggregate dictionary
@@ -115,7 +101,7 @@ class Parser:
             key = column_dict.get("name")
 
         # find out which relation the column belongs to
-        value = findTable(self.schema, value) + "." + value
+        value = findTable(self.relation_names, self.schema, value) + "." + value
         value = keyy[0].upper() + "(" + value + ")"
         return key,value
 
@@ -124,28 +110,54 @@ class Parser:
         aggregate_names = {}
         if token_tree["select"] == "*":
             # all columns
-            for column in self.schema["COLUMNS"]:
-                if self.alias_of_relation.get(findTable(self.schema, column["ColumnName"])) != None: # relation called somewhere in query
-                    column_names[self.alias_of_relation[findTable(self.schema, column["ColumnName"])] + "." + column["ColumnName"]] =  findTable(self.schema, column["ColumnName"]) + "." + column["ColumnName"]
+            for table in self.schema["RELATIONS"]:
+                tableName = table["TableName"]
+                tableID = table["idTable"]
+                if self.alias_of_relation.get(tableName) != None:
+                    # table exists
+                    columns = list(filter(lambda dic: dic["TableID"] - 1 == tableID, self.schema["COLUMNS"]))
+                    for column in columns:
+                        # relation called somewhere in query
+                        column_names[self.alias_of_relation[tableName] + "." + column["ColumnName"]] = tableName + "." + column["ColumnName"]
+        elif type(token_tree["select"]) == list:
+            # multiple column names
+            for dic in token_tree["select"]:
+                if type(dic["value"]) == dict:
+                    # is an aggregate
+                    key, value = self.parse_aggregate_column_dict(dic)
+                    aggregate_names[key] =  value
+                elif dic == "*":
+                    # all columns
+                    for table in self.schema["RELATIONS"]:
+                        tableName = table["TableName"]
+                        tableID = table["idTable"]
+                        if self.alias_of_relation.get(tableName) != None:
+                            # table exists
+                            columns = list(filter(lambda dic: dic["TableID"] - 1 == tableID, self.schema["COLUMNS"]))
+                            for column in columns:
+                                # relation called somewhere in query
+                                column_names[self.alias_of_relation[tableName] + "." + column["ColumnName"]] = tableName + "." + column["ColumnName"]
+                else:
+                    key, value = self.parse_column_dict(dic)
+                    column_names[key] = value
         else:
-            if type(token_tree["select"]) == list:
-                # multiple column names
-                for dic in token_tree["select"]:
-                    if type(dic["value"]) == dict:
-                        # is an aggregate
-                        key, value = self.parse_aggregate_column_dict(dic)
-                        aggregate_names[key] =  value
-                    elif dic == "*":
-                        # aggregate till here, rest *
-                        for column in self.schema["COLUMNS"]:
-                            if self.alias_of_relation.get(findTable(self.schema, column["ColumnName"])) != None: # relation called somewhere in query
-                                column_names[self.alias_of_relation[findTable(self.schema, column["ColumnName"])] + "." + column["ColumnName"]] =  findTable(self.schema, column["ColumnName"]) + "." + column["ColumnName"]
-                    else:
-                        key, value = self.parse_column_dict(dic, relation_names)
-                        column_names[key] = value
-            else:
-                # single column name
-                dic = token_tree["select"]
-                key, value = self.parse_column_dict(dic, relation_names)
-                column_names[key] = value
+            # single column name
+            dic = token_tree["select"]
+            key, value = self.parse_column_dict(dic)
+            column_names[key] = value
         return column_names, aggregate_names
+    
+    def extract_groupby(self, token_tree):
+        if token_tree.get('groupby') != None:
+            return [token_tree['groupby']['value']]
+        return []
+    
+    def extract_orderby(self, token_tree):
+        if token_tree.get('orderby') != None:
+            return token_tree['orderby']
+        return {}
+
+    def extract_limit(self, token_tree):
+        if token_tree.get('limit') != None:
+            return token_tree['limit']
+        return {}        

@@ -16,10 +16,6 @@ PASSWORD = "iiit123"
 AUTH_PLUGIN = "mysql_native_password"
 DB = 'preql'
 
-SYS_CAT_TABLES = ['Columns','Relations','Fragmentation','Site']
-APP_DB_TABLES = ['Restaurants', 'Menu','OrderItem','Orders','Users']
-# NON_FRAG_REALTIONS = set(['Categories','Products','Inventories','Vendors','Customers','Addresses'])
-
 with open("../schema.json") as f:
     DIC = json.load(f)
 
@@ -27,9 +23,6 @@ with open("../schema_type.json") as f:
     SCHEMA = json.load(f)
 
 def clearAppDB(servername):
-    global APP_DB_TABLES, SYS_CAT_TABLES
-    PR_TABLES = set(DIC.keys())
-
     db = mysql.connector.connect(host = servername, user = USERNAME, password = PASSWORD, database=DB)
     cursor = db.cursor()
 
