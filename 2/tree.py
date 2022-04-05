@@ -145,17 +145,20 @@ class Tree:
 
         # check if all conditions in OR of single table
         tables = {}
-        for cond in self.or_conditions[0][0]['or']:
-            print(cond)
-            condition = cond
-            key = list(condition.keys())[0]
-            colname = condition[key][0]
-            literal = condition[key][1]
-            if type(literal) == dict:
-                print(literal)
-                literal = literal["literal"]
-            table_name = parser.alias_of_relation[findTable(parser.relation_names, parser.schema, colname)]
-            tables[table_name] = True
+        try:
+            for cond in self.or_conditions[0][0]['or']:
+                print(cond)
+                condition = cond
+                key = list(condition.keys())[0]
+                colname = condition[key][0]
+                literal = condition[key][1]
+                if type(literal) == dict:
+                    print(literal)
+                    literal = literal["literal"]
+                table_name = parser.alias_of_relation[findTable(parser.relation_names, parser.schema, colname)]
+                tables[table_name] = True
+        except:
+            pass
         orhandled = False
         if len(list(tables.keys())) == 1:
             # only 1 table

@@ -1,0 +1,192 @@
+{
+      "RELATIONS": [
+            {
+                  "idTable": 0,
+                  "TableName": "menu",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "H",
+                  "FragCount": 2
+            },
+            {
+                  "idTable": 1,
+                  "TableName": "user",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "V",
+                  "FragCount": 2
+            },
+            {
+                  "idTable": 2,
+                  "TableName": "item",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "DH",
+                  "FragCount": 2
+            },
+            {
+                  "idTable": 3,
+                  "TableName": "tab",
+                  "ColumnsNo": 5,
+                  "FragmentationType": "None",
+                  "FragCount": 1
+            }
+      ],
+      "FRAGMENTATION": [
+            {
+                  "FragmentationID": 0,
+                  "FragmentationCondition": "Menu.zone==north",
+                  "SiteId": "1",
+                  "RelationId": 0
+            },
+            {
+                  "FragmentationID": 1,
+                  "FragmentationCondition": "Menu.zone==south",
+                  "SiteId": "2",
+                  "RelationId": 0
+            },
+            {
+                  "FragmentationID": 2,
+                  "FragmentationCondition": "3,4",
+                  "SiteId": "1",
+                  "RelationId": 1
+            },
+            {
+                  "FragmentationID": 3,
+                  "FragmentationCondition": "3,5",
+                  "SiteId": "2",
+                  "RelationId": 1
+            },
+            {
+                  "FragmentationID": 4,
+                  "FragmentationCondition": "menuid,itemname,menu.zone==north",
+                  "SiteId": "1",
+                  "RelationId": 2
+            },
+            {
+                  "FragmentationID": 5,
+                  "FragmentationCondition": "menuid,itemname,menu.zone==south",
+                  "SiteId": "2",
+                  "RelationId": 2
+            },
+            {
+                  "FragmentationID": 6,
+                  "FragmentationCondition": "None",
+                  "SiteId": "1",
+                  "RelationId": 3
+            }
+      ],
+      "COLUMNS": [
+            {
+                  "ColumnID": 0,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "itemname",
+                  "TableID": 0
+            },
+            {
+                  "ColumnID": 1,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "zone",
+                  "TableID": 0
+            },
+            {
+                  "ColumnID": 2,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "itemprice",
+                  "TableID": 0
+            },
+            {
+                  "ColumnID": 3,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "id",
+                  "TableID": 1
+            },
+            {
+                  "ColumnID": 4,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "name",
+                  "TableID": 1
+            },
+            {
+                  "ColumnID": 5,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "address",
+                  "TableID": 1
+            },
+            {
+                  "ColumnID": 6,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "itemname",
+                  "TableID": 2
+            },
+            {
+                  "ColumnID": 7,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "menuid",
+                  "TableID": 2
+            },
+            {
+                  "ColumnID": 8,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "quantity",
+                  "TableID": 2
+            },
+            {
+                  "ColumnID": 9,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "hello",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 10,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "your",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 11,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "name",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 12,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "istt",
+                  "TableID": 3
+            },
+            {
+                  "ColumnID": 13,
+                  "ColumnType": "Varchar (50)",
+                  "ColumnName": "vc",
+                  "TableID": 3
+            }
+      ],
+      "SITES": [
+            {
+                  "idSite": 1,
+                  "User": "user",
+                  "ip": "10.3.5.211",
+                  "password": "iiit123",
+                  "HostName": "CP5"
+            },
+            {
+                  "idSite": 2,
+                  "User": "user",
+                  "ip": "10.3.5.208",
+                  "password": "iiit123",
+                  "HostName": "CP6"
+            },
+            {
+                  "idSite": 3,
+                  "User": "user",
+                  "ip": "10.3.5.204",
+                  "password": "iiit123",
+                  "HostName": "CP7"
+            },
+            {
+                  "idSite": 4,
+                  "User": "user",
+                  "ip": "10.3.5.205",
+                  "password": "iiit123",
+                  "HostName": "CP8"
+            }
+      ]
+}
