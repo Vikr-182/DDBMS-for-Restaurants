@@ -110,7 +110,7 @@ class Tree:
                 self.join_conditions.append((condition, -1))
             else:
                 if type_ != "and":
-                    self.parse_condition(condition=condition, parser=parser)
+                        self.parse_condition(condition=condition, parser=parser)
                 else:
                     # and condition
                     for condition in conditions['and']:
@@ -229,7 +229,7 @@ class Tree:
         self.joined_tables = {}
         if parser.alias_of_relation.get(table['TableName']) != None:
             relationID = table['idTable']
-            fragmentation_conditions = list(filter(lambda dic: dic["RelationId"] - 1 == relationID, parser.schema["FRAGMENTATION"]))
+            fragmentation_conditions = list(filter(lambda dic: dic["RelationId"] == relationID, parser.schema["FRAGMENTATION"]))
             cols = parser.schema["COLUMNS"]
             mergecol = None
             for cond in fragmentation_conditions:
@@ -254,7 +254,7 @@ class Tree:
                 else:
                     sec = self.G.nodes[node.nodenum]['data'].content
                 self.joined_tables[self.nodenum] = firs + "," + sec
-                columns = list(filter(lambda dic: dic["ColumnID"] - 1 == mergecol, parser.schema["COLUMNS"]))[0]
+                columns = list(filter(lambda dic: dic["ColumnID"] == mergecol, parser.schema["COLUMNS"]))[0]
                 self.labeldict[self.nodenum] = "JOIN " + firs + "," + sec + " at " + parser.alias_of_relation[table['TableName']] +  "." + columns["ColumnName"]
                 self.add_edge(prevnode.nodenum, self.nodenum)
                 self.add_edge(node.nodenum, self.nodenum)
@@ -277,8 +277,8 @@ class Tree:
     def fragment_horizontally(self, parser, table, horiz_nodes):
         if parser.alias_of_relation.get(table['TableName']) != None:
             relationID = table['idTable']
-            fragmentation_conditions = list(filter(lambda dic: dic["RelationId"] - 1 == relationID, parser.schema["FRAGMENTATION"]))
-            columns = list(filter(lambda dic: dic["TableID"] - 1 == relationID, parser.schema["COLUMNS"]))
+            fragmentation_conditions = list(filter(lambda dic: dic["RelationId"] == relationID, parser.schema["FRAGMENTATION"]))
+            columns = list(filter(lambda dic: dic["TableID"] == relationID, parser.schema["COLUMNS"]))
             cols = parser.schema["COLUMNS"]
             for cond in fragmentation_conditions:
                 node = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="relation")
@@ -340,7 +340,7 @@ class Tree:
         self.revG = self.G
         pos = graphviz_layout(self.revG, prog="dot")
         flipped_pos = {node: (x,-y) for (node, (x,y)) in pos.items()}
-        plt.figure(figsize=(20,12))
+        plt.figure(figsize=(30,12))
         nx.draw(self.revG,  labels=self.labeldict, pos=flipped_pos, with_labels=True,  node_shape="s",  node_color="none", bbox=dict(facecolor="skyblue", edgecolor='black', boxstyle='round,pad=0.5'))
         plt.tight_layout()
         plt.savefig(filename)

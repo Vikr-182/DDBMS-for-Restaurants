@@ -261,13 +261,10 @@ tablenames = [table1.split('.')[0],table2.split('.')[0],table3.split('.')[0]]
 fragtype = []
 
 
-
 for i in tablenames:
     for j in relationlist:
         if j['TableName'] == i:
             fragtype.append(j["FragmentationType"])
-
-
 
 for i in range(len(tablenames)):
     print (fragtype)
@@ -407,17 +404,6 @@ for i in range(len(tablenames)):
                         print(tablenames[i],','.join(keys),','.join(values))
                         insertIntoTable(SITE["ip"], tablenames[i], ','.join(keys), ','.join(values))
                         print ('='*30)
-
-
-
-
-
-
-
-
-
-
-
     else :
         for j in relationlist:
             print (j)
@@ -457,8 +443,3 @@ for i in range(len(tablenames)):
                     print(tablenames[i],','.join(keys),','.join(values))
                     insertIntoTable(SITE["ip"], tablenames[i], ','.join(keys), ','.join(values))
                     print ('='*30)
-
-
-
-
-
