@@ -65,3 +65,7 @@ def findTable(relation_names, schema, col):
         column = columns[0]
         table = list(filter(lambda dic: dic["idTable"] == column["TableID"], schema["RELATIONS"]))[0]
         return table["TableName"]
+
+def get_indices_join(token_tree):
+    indices = [i for i, x in enumerate(token_tree['from']) if type(token_tree['from'][i]) == dict and token_tree['from'][i].get('inner join') != None]
+    return indices
