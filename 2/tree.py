@@ -35,6 +35,7 @@ class Tree:
         self.select_endpoints = {}
         self.nodenum = 0
         self.labeldict = {}
+        self.last_ep = 0
         self.join_mapping = {}
 
     def add_edge(self, u, v):
@@ -48,6 +49,7 @@ class Tree:
     def add_node(self, content, nodetype, label):
         node = Node(nodenum=self.nodenum, content=content, nodetype=nodetype)
         self.G.add_node(self.nodenum, data=node)
+        self.last_ep = self.nodenum
         self.labeldict[self.nodenum] = label
         self.nodenum = self.nodenum + 1
 
@@ -128,7 +130,7 @@ class Tree:
 
         # push select down
         for k,v in self.select_conditions.items():
-            last_ep = self.nodenum - 1
+            self.last_ep = self.nodenum - 1
             prevnode = self.table_to_num[k]
             for vtup in v:
                 condition, condnum = vtup
@@ -169,7 +171,7 @@ class Tree:
             self.G.add_node(self.nodenum, data=node)
             self.labeldict[self.nodenum] = self.parse_or_condition(self.or_conditions[0])
             self.add_edge(prevnode, self.nodenum)
-            last_ep = self.nodenum
+            self.last_ep = self.nodenum
             self.select_endpoints[name] = self.nodenum
             self.nodenum = self.nodenum + 1
             self.condnum = self.condnum + 1            
@@ -178,7 +180,7 @@ class Tree:
         for k,v in self.join_conditions:
             cond = next(iter(k))
             if cond == "eq":
-                last_ep = self.nodenum
+                self.last_ep = self.nodenum
                 self.add_node_x(parser, k, cond, nodetype="join")
 
         # handle cross join conditions
@@ -187,7 +189,7 @@ class Tree:
             if cond != "eq":
                 # break into 2
                 self.add_node_x(parser, {"cross": k[cond]}, "cross", nodetype="cross")
-                last_ep = self.nodenum
+                self.last_ep = self.nodenum
                 self.add_node_x(parser, k, cond, nodetype="select")
             pass
          
@@ -200,8 +202,8 @@ class Tree:
                 cond = "or"
                 self.G.add_node(self.nodenum, data=node)
                 self.labeldict[self.nodenum] = self.parse_or_condition(k)
-                self.add_edge(last_ep, self.nodenum)
-                last_ep = self.nodenum
+                self.add_edge(self.last_ep, self.nodenum)
+                self.last_ep = self.nodenum
                 self.nodenum = self.nodenum + 1
                 self.condnum = self.condnum + 1        
 
@@ -212,13 +214,13 @@ class Tree:
         node = Node(self.nodenum, content=parser.column_names, nodetype="project")
         self.G.add_node(self.nodenum, data=node)
         self.labeldict[self.nodenum] = "PROJECT " + (",").join(list(parser.aggregate_names.keys())) + ", " + (", ").join(list(parser.column_names.keys()))
-        self.add_edge(last_ep, self.nodenum)
-        last_ep = self.nodenum
+        self.add_edge(self.last_ep, self.nodenum)
+        self.last_ep = self.nodenum
         self.nodenum = self.nodenum + 1
         self.condnum = self.condnum + 1
 
         # project optimization
-        curnode = last_ep
+        curnode = self.last_ep
 
         
         # for every table go up and check what all tables are needed.

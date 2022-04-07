@@ -40,6 +40,7 @@ class Parser:
 
     def extract_table_names(self, token_tree):
         relation_names = {}
+        tablenames = [i["TableName"] for i in self.schema["RELATIONS"]]
         if inner_join_exists(token_tree):
             # either join or multiple relations in from
             indices = get_indices_join(token_tree)
@@ -61,6 +62,9 @@ class Parser:
         print(relation_names)
         for k,v in relation_names.items():
             self.alias_of_relation[v] = k
+            if v not in tablenames:
+                print("TABLE NAME NOT IN SCHEMA")
+                exit()
         return relation_names
     
     def parse_condition_block(self, cond, dic=[]):
