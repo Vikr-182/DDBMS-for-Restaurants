@@ -1,0 +1,29 @@
+SELECT 
+    (T1.Col1 AS C1, T2.Col2 AS C2, ..) 
+FROM 
+    T1, T2, ... 
+INNER JOIN T5
+    and 
+        (T2.Col1=T5.Col3, C1=T5.Col2)
+    or 
+        .... 
+WHERE
+    and 
+        (T3.Col1=T4.Col3, T4.Col1=T5.Col2)
+    or
+        ....
+GROUP BY
+    C1
+HAVING
+    T2.Col1 > 10
+ORDER BY
+    C1 ASC/DESC
+LIMIT
+    10
+
+0. No nested queries
+1. Every column will be type-def.ed only once in the entire statement, and all statements refer it by the type-def.ed name.
+2. JOIN always before WHERE, no redundant conditions. All JOIN queries have atleast 1 term in predicate of the join relation.
+3. Non-comp Conditions only have integers or literals on RHS, no OR in INNER JOIN
+4. SELECT AGG(C), * is possible
+5. All column names unique across tables (property of schema)
