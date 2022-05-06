@@ -31,35 +31,35 @@
     ],
     "RELATIONS": [
         {
-            "idTable": 1,
+            "idTable": 0,
             "TableName": "Restaurant",
             "ColumnsNo": 4,
             "FragCount": 4,
             "FragmentationType": "H"
         },
         {
-            "idTable": 2,
+            "idTable": 1,
             "TableName": "Menu",
             "ColumnsNo": 5,
             "FragCount": 4,
             "FragmentationType": "DH"
         },
         {
-            "idTable": 3,
+            "idTable": 2,
             "TableName": "Users",
             "ColumnsNo": 6,
             "FragCount": 4,
             "FragmentationType": "V"
         },
         {
-            "idTable": 4,
+            "idTable": 3,
             "TableName": "Orderr",
             "ColumnsNo": 4,
             "FragCount": 1,
             "FragmentationType": "None"
         },
         {
-            "idTable": 5,
+            "idTable": 4,
             "TableName": "OrderItem",
             "ColumnsNo": 4,
             "FragCount": 1,

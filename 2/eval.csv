@@ -1,0 +1,12 @@
+Fragment Name,Fragmentation Type,Allocated site,Fragmentation Condition,Columns
+labs1,H,1,labs.lab_location==KCIS,"labs.lab_id,labs.lab_name,labs.lab_location"
+labs2,H,2,labs.lab_location==VINDHYA,"labs.lab_id,labs.lab_name,labs.lab_location"
+labs3,H,3,labs.lab_location==HIMALAYA,"labs.lab_id,labs.lab_name,labs.lab_location"
+labs4,H,4,labs.lab_location==NILGIRI,"labs.lab_id,labs.lab_name,labs.lab_location"
+faculty1,DH,1,"labId,lab_id,labs.lab_location==KCIS","faculty.faculty_id,faculty.fname,faculty.lname,faculty.labId"
+faculty2,DH,2,"labId,lab_id,labs.lab_location==VINDHYA","faculty.faculty_id,faculty.fname,faculty.lname,faculty.labId"
+faculty3,DH,3,"labId,lab_id,labs.lab_location==HIMALAYA","faculty.faculty_id,faculty.fname,faculty.lname,faculty.labId"
+faculty4,DH,4,"labId,lab_id,labs.lab_location==NILGIRI","faculty.faculty_id,faculty.fname,faculty.lname,faculty.labId"
+students1,V,1,,"students.rno,students.fname,students.lname"
+students2,V,2,,"students.rno,students.cgpa,students.expense"
+students3,V,3,,"students.rno,students.branch,students.facId"
