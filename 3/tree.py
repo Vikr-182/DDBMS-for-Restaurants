@@ -10,6 +10,8 @@ from networkx.drawing.nx_pydot import graphviz_layout
 
 from node import *
 
+from moz_sql_parser import format
+
 class Tree:
     def __init__(self, parser) -> None:
         self.root = None
@@ -62,6 +64,9 @@ class Tree:
             self.nodenum = self.nodenum + 1
 
         elif nodetype == "SELECT":
+            print(content, "ALALLALALAL:")
+            print(format(content), "IUIUIU")
+            print(format({"from":"test", "select":["*"], "where":content}))
             node = Node(nodenum=self.nodenum, content={"type": "SELECT", "columns": content}, nodetype=nodetype)
             self.G.add_node(self.nodenum, data=node)
             self.last_ep = self.nodenum
@@ -235,6 +240,22 @@ class Tree:
                 self.condnum = self.condnum + 1        
 
         # handle groupby
+        if self.parser.token_tree.get("groupby") != None:
+            node = Node(self.nodenum, content={"type":"GROUPBY", "content":parser.token_tree.get("groupby"), "columns": list(parser.aggregate_names.keys())}, nodetype="PROJECT")
+            self.G.add_node(self.nodenum, data=node)
+            self.labeldict[self.nodenum] = "GROUP BY " + parser.token_tree.get("groupby")["value"]
+            self.add_edge(self.last_ep, self.nodenum)
+            self.last_ep = self.nodenum
+            self.nodenum = self.nodenum + 1
+            self.condnum = self.condnum + 1
+        '''
+        self.add_edge(self.last_ep, self.nodenum)
+        self.last_ep = self.nodenum
+        self.nodenum = self.nodenum + 1
+        self.condnum = self.condnum + 1
+        '''
+
+
         
 
         # attach to project
