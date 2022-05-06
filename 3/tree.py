@@ -49,9 +49,13 @@ class Tree:
     def add_node(self, content, nodetype, label, site=-1):
         if nodetype == "RELATION":
             frag_type = get_fragmentation_type(self.parser, self.parser.alias_of_relation[label])
+            print(frag_type)
             if frag_type == "None":
+                print("BAZINGA")
                 siteid = get_fragmentation_site(self.parser, self.parser.alias_of_relation[label])
                 node = Node(nodenum=self.nodenum, content={"type": "RELATION", "name": label + "@{}".format(siteid), "site": siteid}, nodetype=nodetype)
+            else:
+                node = Node(nodenum=self.nodenum, content={"type": "RELATION", "name": label}, nodetype=nodetype)
             self.G.add_node(self.nodenum, data=node)
             self.last_ep = self.nodenum
             self.labeldict[self.nodenum] = label
@@ -229,7 +233,7 @@ class Tree:
         
 
         # attach to project
-        node = Node(self.nodenum, content={"type":"PROJECT", "content":parser.column_names, "columns": list(parser.aggregate_names.keys()) + list(parser.column_names.keys())}, nodetype="project")
+        node = Node(self.nodenum, content={"type":"PROJECT", "content":parser.column_names, "columns": list(parser.aggregate_names.keys()) + list(parser.column_names.keys())}, nodetype="PROJECT")
         self.G.add_node(self.nodenum, data=node)
         self.labeldict[self.nodenum] = "PROJECT " + (",").join(list(parser.aggregate_names.keys())) + ", " + (", ").join(list(parser.column_names.keys()))
         self.add_edge(self.last_ep, self.nodenum)

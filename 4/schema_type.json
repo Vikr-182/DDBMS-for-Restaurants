@@ -1,0 +1,28 @@
+{
+    "SITES": {
+        "idSite": "int",
+        "User": "varchar(50)",
+        "ip": "varchar(50)",
+        "password": "varchar(50)",
+        "HostName": "varchar(50)"
+    },
+    "RELATIONS": {
+        "idTable": "int",
+        "TableName": "varchar(50)",
+        "ColumnsNo": "int",
+        "FragCount": "int",
+        "FragmentationType": "varchar(50)"
+    },
+    "FRAGMENTATION": {
+        "FragmentationID": "int",
+        "FragmentationCondition": "varchar(50)",
+        "SiteId": "int",
+        "RelationId": "int"
+    },
+    "COLUMNS": {
+        "ColumnID": "int",
+        "ColumnType": "varchar(50)",
+        "ColumnName": "varchar(50)",
+        "TableID": "int"
+    }
+}
