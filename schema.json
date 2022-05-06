@@ -9,7 +9,7 @@
             },
             {
                   "idTable": 1,
-                  "TableName": "user",
+                  "TableName": "userr",
                   "ColumnsNo": 3,
                   "FragmentationType": "V",
                   "FragCount": 2
@@ -32,13 +32,13 @@
       "FRAGMENTATION": [
             {
                   "FragmentationID": 0,
-                  "FragmentationCondition": "Menu.zone==north",
+                  "FragmentationCondition": "menu.zone==north",
                   "SiteId": "1",
                   "RelationId": 0
             },
             {
                   "FragmentationID": 1,
-                  "FragmentationCondition": "Menu.zone==south",
+                  "FragmentationCondition": "menu.zone==south",
                   "SiteId": "2",
                   "RelationId": 0
             },
@@ -69,7 +69,7 @@
             {
                   "FragmentationID": 6,
                   "FragmentationCondition": "None",
-                  "SiteId": "0",
+                  "SiteId": "1",
                   "RelationId": 3
             }
       ],

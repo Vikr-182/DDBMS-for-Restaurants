@@ -39,7 +39,12 @@ SYS_CAT_TABLES = ['Columns','Relations','Fragmentation','Site']
 APP_DB_TABLES = ['Restaurants', 'Menu','OrderItem','Orders','Users']
 # NON_FRAG_REALTIONS = set(['Categories','Products','Inventories','Vendors','Customers','Addresses'])
 
-
+sites_mapping = {
+        "10.3.5.211":0,
+        "10.3.5.208":1,
+        "10.3.5.204":2,
+        "10.3.5.205":3
+}
 
 def clearAppDB(servername):
     global APP_DB_TABLES, SYS_CAT_TABLES
@@ -72,7 +77,7 @@ def createTable(servername, tableName, columns):
     return
 
 def insertIntoTable(servername, tableName, keys, values):
-    QUERY = " INSERT INTO {} ({}) VALUES ({});".format(tableName,keys, values)
+    QUERY = " INSERT INTO {} ({}) VALUES ({});".format(tableName + "_" + str(sites_mapping[servername]),keys, values)
     print ('*'*30)
     print(QUERY)
     print (SITE)

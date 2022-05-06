@@ -96,7 +96,12 @@ class Tree:
         return "SELECT " + format({"from":"test", "select":["*"], "where":cond[0]})[25:]
 
     def add_node_x(self, parser, k, cond, nodetype):
-        node = Node(self.nodenum, content=k, nodetype=nodetype)
+        if nodetype == "JOIN":
+            node = Node(self.nodenum, content={"type":"JOIN", "column": [k[cond][0], k[cond][1]]}, nodetype=nodetype)
+        elif nodetype == "CROSS":
+            node = Node(self.nodenum, content={"type":"CROSS", "column": [k[cond][0], k[cond][1]]}, nodetype=nodetype)
+        else:
+            node = Node(self.nodenum, content={"type":"SELECT", "condition": k}, nodetype=nodetype)
         cond1 = k[cond][0]
         cond2 = k[cond][1]
         rel1 = get_table(parser, cond1)
@@ -267,7 +272,8 @@ class Tree:
             prevnode = vert_nodes[0]
             for nodelen in range(1, len(vert_nodes)):
                 node = vert_nodes[nodelen]
-                nodee = Node(self.nodenum, content={"type": "JOIN"}, nodetype="JOIN")
+                columns = list(filter(lambda dic: dic["ColumnID"] == mergecol, parser.schema["COLUMNS"]))[0]
+                nodee = Node(self.nodenum, content={"type": "JOIN", "column": [table['TableName'] + "." + columns["ColumnName"], table['TableName'] + "." + columns["ColumnName"]]}, nodetype="JOIN")
                 self.G.add_node(self.nodenum, data=nodee)
                 firs, sec = [], []
                 if self.joined_tables.get(prevnode.nodenum) != None:
@@ -278,9 +284,9 @@ class Tree:
                     sec = self.joined_tables.get(node.nodenum)
                 else:
                     sec = self.G.nodes[node.nodenum]['data'].content
-                self.joined_tables[self.nodenum] = firs + "," + sec
+                #self.joined_tables[self.nodenum] = firs + "," + sec
                 columns = list(filter(lambda dic: dic["ColumnID"] == mergecol, parser.schema["COLUMNS"]))[0]
-                self.labeldict[self.nodenum] = "JOIN " + firs + "," + sec + " at " + parser.alias_of_relation[table['TableName']] +  "." + columns["ColumnName"]
+                self.labeldict[self.nodenum] = "JOIN " + parser.alias_of_relation[table['TableName']] +  "." + columns["ColumnName"]
                 self.add_edge(prevnode.nodenum, self.nodenum)
                 self.add_edge(node.nodenum, self.nodenum)
                 self.nodenum = self.nodenum + 1

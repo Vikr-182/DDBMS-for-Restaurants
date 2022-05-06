@@ -48,9 +48,9 @@ def clearAppDB(servername):
     db.close()
 
 
-def createTable(servername, tableName, columns):
+def createTable(servername, tableName, columns, serverind):
     #print(tableName, columns)
-    QUERY = " CREATE TABLE IF NOT EXISTS {} ({});".format(tableName, columns)
+    QUERY = " CREATE TABLE IF NOT EXISTS {} ({});".format(tableName + "_" + str(serverind), columns)
     print(QUERY,servername)
     db = mysql.connector.connect(host = servername, user = USERNAME, password = PASSWORD, database=DB)
     cursor = db.cursor()
@@ -99,9 +99,9 @@ if __name__ == '__main__':
                 if DIC["COLUMNS"][i]["TableID"] == row["RelationId"]:
                     similarcols.append(i)
             string = [DIC["COLUMNS"][colid]["ColumnName"] + " " + DIC["COLUMNS"][colid]["ColumnType"] for colid in similarcols]
-            createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+            createTable(SITE["ip"], RELATION["TableName"], ",".join(string), int(row["SiteId"]) - 1)
         else:
             # create table with vertical splits
             string = [DIC["COLUMNS"][int(colid)]["ColumnName"] + " " + DIC["COLUMNS"][int(colid)]["ColumnType"] for colid in row["FragmentationCondition"].split(",")]
-            createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+            createTable(SITE["ip"], RELATION["TableName"], ",".join(string), int(row["SiteId"]) - 1)
 

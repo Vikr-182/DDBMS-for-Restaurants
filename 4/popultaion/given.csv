@@ -1,8 +1,8 @@
 Fragment Name,Fragmentation Type,Allocated site,Fragmentation Condition,Columns
-menu1,H,1,Menu.zone==north,"menu.itemname.varchar (50),menu.zone.varchar (50),menu.itemprice.int "
-menu2,H,2,Menu.zone==south,"menu.itemname.varchar (50),menu.zone.varchar (50),menu.itemprice.int "
-User1,V,1,,"user.id.varchar (50),user.name.varchar(50)"
-User2,V,2,,"user.id.varchar (50),user.address.varchar (50)"
+menu1,H,1,menu.zone==north,"menu.itemname.varchar (50),menu.zone.varchar (50),menu.itemprice.int "
+menu2,H,2,menu.zone==south,"menu.itemname.varchar (50),menu.zone.varchar (50),menu.itemprice.int "
+Userr1,V,1,,"userr.id.varchar (50),userr.name.varchar(50)"
+Userr2,V,2,,"userr.id.varchar (50),userr.address.varchar (50)"
 item,DH,1,"menuid,itemname,menu.zone==north","item.itemname.varchar (50),item.menuid.varchar (50),item.quantity.int"
 Item2,DH,2,"menuid,itemname,menu.zone==south","item.itemname.varchar (50),item.menuid.varchar (50),item.quantity.int"
 FullTAB,None,1,None,"tab.hello.varchar (50),tab.your.varchar (50),tab.name.varchar (50),tab.istt.varchar (50),tab.vc.varchar (50)"
