@@ -6,7 +6,7 @@ print("Enter your mySQL Query : ")
 # query = input()
 # query = "SELECT SUM(Restaurant.RestaurantID), Restaurant.RestaurantID, Menu.Description, Restaurant.RestaurantName FROM Restaurant INNER JOIN Menu ON Restaurant.RestaurantID=Menu.RestaurantID WHERE Menu.MenuID > 10 ORDER BY Menu.MenuID ASC LIMIT 10;"
 # query = "SELECT * FROM Menu AS CUS INNER JOIN Restaurant AS ORD ON CUS.MenuID = ORD.MenuID AND CUS.Name = 'John'"
-query = "SELECT M.Cuisine, SUM(R.RestaurantID) FROM Restaurant R, Menu M WHERE ((R.Zone=='NORTH' OR R.Zone==WEST) OR (R.RestaurantID==1)) and (R.RestaurantName != M.Description) and (R.Zone!='EAST')"
+query = "SELECT M.Cuisine, SUM(R.RestaurantID) FROM Restaurant R, Menu M WHERE ((R.Zone=='NORTH' OR R.Zone==WEST) OR (R.RestaurantID==1)) and (R.RestaurantName == M.Description) and (R.Zone!='EAST')"
 # XM, JF, RJ, FM, ... SM
 # OL, SS, DDS
 # query = "select cgpa from students, faculty, labs where students.facId=faculty.faculty_id and labs.lab_id=faculty.labId and labs.lab_location='KCIS'"

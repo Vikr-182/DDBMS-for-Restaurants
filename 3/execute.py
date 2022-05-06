@@ -99,7 +99,33 @@ def execute(G, nodenum):
             print(content["column"])
             col1 = content["column"][0].split(".")[1]
             col2 = content["column"][1].split(".")[1]
-            if col1 == col2
+            query = "select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=\"{}_TEMP\";".format(c1)
+            cursor.execute(query)
+            rows1 = cursor.fetchall()
+            rows1 = [i[0] for i in rows1]
+
+            query = "select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=\"{}_TEMP\";".format(c2)
+            cursor.execute(query)
+            rows2 = cursor.fetchall()
+            rows2 = [i[0] for i in rows2]
+
+            col1s = rows1.remove(col1)
+            col2s = rows2.remove(col2)
+
+            string = ""
+            for i in range(len(col1s) - 1):
+                string += "{}_TEMP".format(c1) + "." + col1s[i]
+                string += ","
+            string += col1s[-1]
+            string += ","
+
+            for i in range(len(col2s) - 1):
+                string += "{}_TEMP".format(c2) + "." + col2s[i]
+                string += ","
+            string += col2s[-1]
+            string += ","
+            string += "{}_TEMP.{}".format(c1, col1)
+
             query = "CREATE TABLE {}_TEMP AS (SELECT * FROM {}_TEMP INNER JOIN {}_TEMP ON {}_TEMP.{}={}_TEMP.{})".format(nodenum, c1, c2, c1, col1, c2, col2)
             print(query)
             cursor.execute(query)
