@@ -17,6 +17,20 @@ def get_col(parser, col):
         return parser.relation_names[col.split(".")[0]] + "." + col.split(".")[1]
     return findTable(parser.schema, col) + "." + col.split(".")[0]
 
+def get_fragmentation_type(parser, table):
+    schema = parser.schema
+    schema["RELATIONS"]
+    tables = list(filter(lambda dic: dic["TableName"] == table, schema["RELATIONS"]))[0]
+    return tables["FragmentationType"]
+
+def get_fragmentation_site(parser, table):
+    schema = parser.schema
+    schema["RELATIONS"]
+    tables = list(filter(lambda dic: dic["TableName"] == table, schema["RELATIONS"]))[0]
+    tableid = tables["idTable"]
+    frag = list(filter(lambda dic: dic["RelationId"] == tableid, schema["FRAGMENTATION"]))[0]
+    return frag["SiteId"]
+
 def get_table(parser, col):
     if len(col.split(".")) > 1:
         # contains table

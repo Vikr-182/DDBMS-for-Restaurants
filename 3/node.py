@@ -36,3 +36,5 @@ class Node:
         self.columns = []
         self.mapping = {}
         self.statement = ""
+        self.site = ""
+        self.executed = False

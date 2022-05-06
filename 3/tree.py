@@ -46,12 +46,30 @@ class Tree:
             self.G.nodes[v]['data'].child2 = u
         self.G.add_edge(u, v)
 
-    def add_node(self, content, nodetype, label):
-        node = Node(nodenum=self.nodenum, content=content, nodetype=nodetype)
-        self.G.add_node(self.nodenum, data=node)
-        self.last_ep = self.nodenum
-        self.labeldict[self.nodenum] = label
-        self.nodenum = self.nodenum + 1
+    def add_node(self, content, nodetype, label, site=-1):
+        if nodetype == "RELATION":
+            frag_type = get_fragmentation_type(self.parser, self.parser.alias_of_relation[label])
+            if frag_type == "None":
+                siteid = get_fragmentation_site(self.parser, self.parser.alias_of_relation[label])
+                node = Node(nodenum=self.nodenum, content={"type": "RELATION", "name": label + "@{}".format(siteid), "site": siteid}, nodetype=nodetype)
+            self.G.add_node(self.nodenum, data=node)
+            self.last_ep = self.nodenum
+            self.labeldict[self.nodenum] = label
+            self.nodenum = self.nodenum + 1
+
+        elif nodetype == "SELECT":
+            node = Node(nodenum=self.nodenum, content={"type": "SELECT", "columns": content}, nodetype=nodetype)
+            self.G.add_node(self.nodenum, data=node)
+            self.last_ep = self.nodenum
+            self.labeldict[self.nodenum] = label
+            self.nodenum = self.nodenum + 1            
+
+        elif nodetype == "PROJECT":
+            node = Node(nodenum=self.nodenum, content={"type": "PROJECT", "columns": content}, nodetype=nodetype)
+            self.G.add_node(self.nodenum, data=node)
+            self.last_ep = self.nodenum
+            self.labeldict[self.nodenum] = label
+            self.nodenum = self.nodenum + 1
 
     def parse_condition(self, condition, parser):
         type_ = get_type(condition, parser)
@@ -192,7 +210,7 @@ class Tree:
                 self.last_ep = self.nodenum
                 self.add_node_x(parser, k, cond, nodetype="select")
             pass
-         
+
         # handle or conditions
         if not orhandled:
             # needs to be above all join conditions
@@ -211,7 +229,7 @@ class Tree:
         
 
         # attach to project
-        node = Node(self.nodenum, content=parser.column_names, nodetype="project")
+        node = Node(self.nodenum, content={"type":"PROJECT", "content":parser.column_names, "columns": list(parser.aggregate_names.keys()) + list(parser.column_names.keys())}, nodetype="project")
         self.G.add_node(self.nodenum, data=node)
         self.labeldict[self.nodenum] = "PROJECT " + (",").join(list(parser.aggregate_names.keys())) + ", " + (", ").join(list(parser.column_names.keys()))
         self.add_edge(self.last_ep, self.nodenum)
@@ -235,7 +253,9 @@ class Tree:
             mergecol = None
             for cond in fragmentation_conditions:
                 mergecol = int(cond["FragmentationCondition"].split(",")[0])
-                node = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']] + "@site" + str(cond["SiteId"]), nodetype="relation")
+                label = table['TableName']
+                siteid = cond["SiteId"]
+                node = Node(self.nodenum, content={"type": "RELATION", "name": label + "@{}".format(siteid), "site": siteid}, nodetype="RELATION")
                 vert_nodes.append(node)
                 self.G.add_node(self.nodenum, data=node)
                 self.labeldict[self.nodenum] = parser.alias_of_relation[table['TableName']] + "@site" + str(cond["SiteId"])
@@ -243,7 +263,7 @@ class Tree:
             prevnode = vert_nodes[0]
             for nodelen in range(1, len(vert_nodes)):
                 node = vert_nodes[nodelen]
-                nodee = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="join")
+                nodee = Node(self.nodenum, content={"type": "JOIN"}, nodetype="JOIN")
                 self.G.add_node(self.nodenum, data=nodee)
                 firs, sec = [], []
                 if self.joined_tables.get(prevnode.nodenum) != None:
@@ -282,7 +302,9 @@ class Tree:
             columns = list(filter(lambda dic: dic["TableID"] == relationID, parser.schema["COLUMNS"]))
             cols = parser.schema["COLUMNS"]
             for cond in fragmentation_conditions:
-                node = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="relation")
+                label = table['TableName']
+                siteid = cond["SiteId"]
+                node = Node(self.nodenum, content={"type": "RELATION", "name": label + "@{}".format(siteid), "site": siteid}, nodetype="RELATION")
                 horiz_nodes.append(node)
                 self.G.add_node(self.nodenum, data=node)
                 self.labeldict[self.nodenum] = parser.alias_of_relation[table['TableName']] + "@site" + str(cond["SiteId"])
@@ -291,7 +313,7 @@ class Tree:
             prevnode = horiz_nodes[0]
             for nodelen in range(1, len(horiz_nodes)):
                 node = horiz_nodes[nodelen]
-                nodee = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="join")
+                nodee = Node(self.nodenum, content=parser.alias_of_relation[table['TableName']], nodetype="UNION")
                 self.G.add_node(self.nodenum, data=nodee)
                 self.labeldict[self.nodenum] = "UNION"
                 self.add_edge(prevnode.nodenum, self.nodenum)

@@ -99,9 +99,15 @@ if __name__ == '__main__':
                 if DIC["COLUMNS"][i]["TableID"] == row["RelationId"]:
                     similarcols.append(i)
             string = [DIC["COLUMNS"][colid]["ColumnName"] + " " + DIC["COLUMNS"][colid]["ColumnType"] for colid in similarcols]
-            createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+            try:
+                createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+            except:
+                pass
         else:
             # create table with vertical splits
             string = [DIC["COLUMNS"][int(colid)]["ColumnName"] + " " + DIC["COLUMNS"][int(colid)]["ColumnType"] for colid in row["FragmentationCondition"].split(",")]
-            createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+            try:
+                createTable(SITE["ip"], RELATION["TableName"], columns=",".join(string))
+            except:
+                pass
 

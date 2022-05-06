@@ -2,178 +2,161 @@
       "RELATIONS": [
             {
                   "idTable": 0,
-                  "TableName": "labs",
+                  "TableName": "menu",
                   "ColumnsNo": 3,
                   "FragmentationType": "H",
-                  "FragCount": 4
+                  "FragCount": 2
             },
             {
                   "idTable": 1,
-                  "TableName": "faculty",
-                  "ColumnsNo": 4,
-                  "FragmentationType": "DH",
-                  "FragCount": 4
+                  "TableName": "user",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "V",
+                  "FragCount": 2
             },
             {
                   "idTable": 2,
-                  "TableName": "students",
-                  "ColumnsNo": 7,
-                  "FragmentationType": "V",
-                  "FragCount": 3
+                  "TableName": "item",
+                  "ColumnsNo": 3,
+                  "FragmentationType": "DH",
+                  "FragCount": 2
+            },
+            {
+                  "idTable": 3,
+                  "TableName": "tab",
+                  "ColumnsNo": 5,
+                  "FragmentationType": "None",
+                  "FragCount": 1
             }
       ],
       "FRAGMENTATION": [
             {
                   "FragmentationID": 0,
-                  "FragmentationCondition": "labs.lab_location==KCIS",
+                  "FragmentationCondition": "Menu.zone==north",
                   "SiteId": "1",
                   "RelationId": 0
             },
             {
                   "FragmentationID": 1,
-                  "FragmentationCondition": "labs.lab_location==VINDHYA",
+                  "FragmentationCondition": "Menu.zone==south",
                   "SiteId": "2",
                   "RelationId": 0
             },
             {
                   "FragmentationID": 2,
-                  "FragmentationCondition": "labs.lab_location==HIMALAYA",
-                  "SiteId": "3",
-                  "RelationId": 0
+                  "FragmentationCondition": "3,4",
+                  "SiteId": "1",
+                  "RelationId": 1
             },
             {
                   "FragmentationID": 3,
-                  "FragmentationCondition": "labs.lab_location==NILGIRI",
-                  "SiteId": "4",
-                  "RelationId": 0
+                  "FragmentationCondition": "3,5",
+                  "SiteId": "2",
+                  "RelationId": 1
             },
             {
                   "FragmentationID": 4,
-                  "FragmentationCondition": "labId,lab_id,labs.lab_location==KCIS",
+                  "FragmentationCondition": "menuid,itemname,menu.zone==north",
                   "SiteId": "1",
-                  "RelationId": 1
+                  "RelationId": 2
             },
             {
                   "FragmentationID": 5,
-                  "FragmentationCondition": "labId,lab_id,labs.lab_location==VINDHYA",
+                  "FragmentationCondition": "menuid,itemname,menu.zone==south",
                   "SiteId": "2",
-                  "RelationId": 1
+                  "RelationId": 2
             },
             {
                   "FragmentationID": 6,
-                  "FragmentationCondition": "labId,lab_id,labs.lab_location==HIMALAYA",
-                  "SiteId": "3",
-                  "RelationId": 1
-            },
-            {
-                  "FragmentationID": 7,
-                  "FragmentationCondition": "labId,lab_id,labs.lab_location==NILGIRI",
-                  "SiteId": "4",
-                  "RelationId": 1
-            },
-            {
-                  "FragmentationID": 8,
-                  "FragmentationCondition": "7,8,9",
+                  "FragmentationCondition": "None",
                   "SiteId": "1",
-                  "RelationId": 2
-            },
-            {
-                  "FragmentationID": 9,
-                  "FragmentationCondition": "7,10,11",
-                  "SiteId": "2",
-                  "RelationId": 2
-            },
-            {
-                  "FragmentationID": 10,
-                  "FragmentationCondition": "7,12,13",
-                  "SiteId": "3",
-                  "RelationId": 2
+                  "RelationId": 3
             }
       ],
       "COLUMNS": [
             {
                   "ColumnID": 0,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "lab_id",
+                  "ColumnName": "itemname",
                   "TableID": 0
             },
             {
                   "ColumnID": 1,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "lab_name",
+                  "ColumnName": "zone",
                   "TableID": 0
             },
             {
                   "ColumnID": 2,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "lab_location",
+                  "ColumnName": "itemprice",
                   "TableID": 0
             },
             {
                   "ColumnID": 3,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "faculty_id",
+                  "ColumnName": "id",
                   "TableID": 1
             },
             {
                   "ColumnID": 4,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "fname",
+                  "ColumnName": "name",
                   "TableID": 1
             },
             {
                   "ColumnID": 5,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "lname",
+                  "ColumnName": "address",
                   "TableID": 1
             },
             {
                   "ColumnID": 6,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "labId",
-                  "TableID": 1
+                  "ColumnName": "itemname",
+                  "TableID": 2
             },
             {
                   "ColumnID": 7,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "rno",
+                  "ColumnName": "menuid",
                   "TableID": 2
             },
             {
                   "ColumnID": 8,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "fname",
+                  "ColumnName": "quantity",
                   "TableID": 2
             },
             {
                   "ColumnID": 9,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "lname",
-                  "TableID": 2
+                  "ColumnName": "hello",
+                  "TableID": 3
             },
             {
                   "ColumnID": 10,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "cgpa",
-                  "TableID": 2
+                  "ColumnName": "your",
+                  "TableID": 3
             },
             {
                   "ColumnID": 11,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "expense",
-                  "TableID": 2
+                  "ColumnName": "name",
+                  "TableID": 3
             },
             {
                   "ColumnID": 12,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "branch",
-                  "TableID": 2
+                  "ColumnName": "istt",
+                  "TableID": 3
             },
             {
                   "ColumnID": 13,
                   "ColumnType": "Varchar (50)",
-                  "ColumnName": "facId",
-                  "TableID": 2
+                  "ColumnName": "vc",
+                  "TableID": 3
             }
       ],
       "SITES": [
