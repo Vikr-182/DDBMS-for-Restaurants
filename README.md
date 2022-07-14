@@ -1,4 +1,4 @@
-# Distributed-Data-Systems
+# Distributed-DBMS-for-Restaurants
 Part of Distributed Data Systems Course, Spring-2022, IIIT-H.
 
 ## System Overview
